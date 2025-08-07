@@ -17,6 +17,8 @@ local prefabs =
 	"gears",
 	"transistor",
 	"wagpunk_bits",
+
+    "chesspiece_wagboss_robot_sketch",
 }
 
 SetSharedLootTable("wagboss_robot",
@@ -25,6 +27,7 @@ SetSharedLootTable("wagboss_robot",
 	{ "transistor",			0.5 },
 	{ "wagpunk_bits",		1.0 },
 	{ "wagpunk_bits",		0.5 },
+	{"chesspiece_wagboss_robot_sketch", 1.0},
 })
 
 local brain = require("brains/wagboss_robotbrain")
@@ -1608,6 +1611,10 @@ local function RemoveTrader(inst)
     inst:RemoveComponent("trader")
 end
 
+local SCRAPBOOK_SYMBOLCOLOURS = {
+	{"lb_glow", 1, 1, 1, 0.375},
+	--{"lb_flame_loop", 1, 1, 1, 0.75},
+}
 local function fn()
 	local inst = CreateEntity()
 
@@ -1684,8 +1691,14 @@ local function fn()
 
 	inst.scrapbook_overridedata = {
 		{ "glass1", "wagboss_robot", "glass2" },
+
+		{ "lb_flame_loop", "wagboss_lunar", "lb_flame_loop" },
+		{ "lb_glow", "wagboss_lunar", "lb_glow" },
+		--{ "crown_bk_follow", "wagboss_lunar", "crown_bk_comp" },
 	}
+	inst.scrapbook_symbolcolours = SCRAPBOOK_SYMBOLCOLOURS
 	inst.scrapbook_anim = "scrapbook"
+	--inst.scrapbook_overridebuild = "wagboss_lunar"
 
 	--Remove these tags so that they can be added properly when replicating components below
 	inst:RemoveTag("__health")
