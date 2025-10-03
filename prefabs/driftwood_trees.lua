@@ -57,7 +57,7 @@ end
 
 local function make_stump(inst, is_burnt)
     inst:RemoveComponent("workable")
-    inst:RemoveComponent("lunarhailbuildup")
+    RemoveLunarHailBuildup(inst)
     inst:RemoveComponent("burnable")
     inst:RemoveComponent("propagator")
     inst:RemoveComponent("hauntable")
@@ -168,10 +168,12 @@ local function onload(inst, data)
         inst.AnimState:PlayAnimation("stump", false)
         if is_burnt then
             DefaultBurntFn(inst)
+            RemoveLunarHailBuildup(inst)
         end
     elseif data.burnt and not inst:HasTag("burnt") then
         -- Make the appropriate driftwood burnt function, then immediately call it on the instance we're loading.
         on_burnt(inst)
+        RemoveLunarHailBuildup(inst)
     end
 end
 

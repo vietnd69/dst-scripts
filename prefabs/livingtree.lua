@@ -57,7 +57,7 @@ end
 
 local function makestump(inst, instant)
     inst:RemoveComponent("workable")
-    inst:RemoveComponent("lunarhailbuildup")
+    RemoveLunarHailBuildup(inst)
     inst:RemoveComponent("burnable")
     MakeMediumBurnable(inst)
     inst:RemoveComponent("propagator")
@@ -145,9 +145,11 @@ local function onload(inst, data)
             makestump(inst, true)
             if data.burnt or inst:HasTag("burnt") then
                 DefaultBurntFn(inst)
+                RemoveLunarHailBuildup(inst)
             end
         elseif data.burnt and not inst:HasTag("burnt") then
             OnBurnt(inst)
+            RemoveLunarHailBuildup(inst)
         end
     end
 end

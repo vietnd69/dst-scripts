@@ -6,6 +6,10 @@ local STATUS = {
     FULL = 2,
 }
 
+local FX_OVERRIDES = {
+    ["oceanwhirlbigportal"] = "spawn_fx_ocean_static",
+}
+
 local function onstatus(self, val)
     if not self.hiddenaction and val == STATUS.ACTIVE then
         self.inst:AddTag("migrator")
@@ -43,6 +47,8 @@ local WorldMigrator = Class(function(self, inst)
 
     self.linkedWorld = nil
     self.receivedPortal = nil
+
+    self.FX_OVERRIDES = FX_OVERRIDES
 
     self.inst:DoTaskInTime(0, init, self)
 end,
@@ -198,7 +204,8 @@ function WorldMigrator:Activate(doer)
         if not doer._despawning then
             print("Activating portal["..self.id.."] to "..(self.linkedWorld or "<nil>").." by "..tostring(doer))
             self.inst:PushEvent("migration_activate", {doer = doer})
-            TheWorld:PushEvent("ms_playerdespawnandmigrate", { player = doer, portalid = self.id, worldid = self.linkedWorld })
+            local fxoverride = self.FX_OVERRIDES[self.id]
+            TheWorld:PushEvent("ms_playerdespawnandmigrate", { player = doer, portalid = self.id, worldid = self.linkedWorld, fxoverride = fxoverride, })
         end
         return true
     end
@@ -251,7 +258,7 @@ function WorldMigrator:OnLoad(data)
 end
 
 function WorldMigrator:GetDebugString()
-    return string.format("ID: %d world: %s (%s) available: %s receives: %d status: %s enabled: %s", self.id or -1, self.linkedWorld or "<nil>", self.auto and "auto" or "manual", tostring(self.linkedWorld and Shard_IsWorldAvailable(self.linkedWorld) or false), self.receivedPortal or -1, self:GetStatusString(), tostring(self.enabled))
+    return string.format("ID: %s world: %s (%s) available: %s receives: %s status: %s enabled: %s", tostring(self.id or "n/a"), self.linkedWorld or "<nil>", self.auto and "auto" or "manual", tostring(self.linkedWorld and Shard_IsWorldAvailable(self.linkedWorld) or false), tostring(self.receivedPortal or "n/a"), self:GetStatusString(), tostring(self.enabled))
 end
 
 return WorldMigrator

@@ -485,7 +485,7 @@ local function make_stump(inst)
     inst:RemoveComponent("propagator")
     MakeSmallPropagator(inst)
     inst:RemoveComponent("workable")
-    inst:RemoveComponent("lunarhailbuildup")
+    RemoveLunarHailBuildup(inst)
     inst:RemoveTag("shelter")
     inst:RemoveTag("cattoyairborne")
     inst:AddTag("stump")
@@ -1063,7 +1063,7 @@ local function onload(inst, data)
             if data.stump then
                 inst.monster = data.monster
                 inst.components.growable.stage = 3
-                inst:RemoveComponent("lunarhailbuildup")
+                RemoveLunarHailBuildup(inst)
                 inst:AddTag("stump")
             elseif not data.burnt then
                 inst.monster = false
@@ -1109,9 +1109,11 @@ local function onload(inst, data)
             make_stump(inst)
             if data.burnt or inst:HasTag("burnt") then
                 DefaultBurntFn(inst)
+                RemoveLunarHailBuildup(inst)
             end
         elseif data.burnt then
             inst._wasonfire = true--OnEntityWake will handle it actually doing burnt logic
+            RemoveLunarHailBuildup(inst)
         end
     end
 
@@ -1409,7 +1411,7 @@ local function makefn(build, stage, data)
             inst:RemoveComponent("burnable")
             MakeSmallBurnable(inst)
             inst:RemoveComponent("workable")
-            inst:RemoveComponent("lunarhailbuildup")
+            RemoveLunarHailBuildup(inst)
             inst:RemoveComponent("propagator")
             MakeSmallPropagator(inst)
             inst:RemoveComponent("growable")
