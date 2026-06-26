@@ -171,13 +171,16 @@ local function _AOEAttack(inst, dist, radius, arc, heavymult, mult, forcelanded,
 				(arcx == nil or x + cos_theta * dx - sin_theta * dz > arcx) and
 				inst.components.combat:CanTarget(v)
 			then
+				if targets then
+					targets[v] = true
+					if mult and v.components.rider and v.components.rider.mount then
+						targets[v.components.rider.mount] = true
+					end
+				end
 				inst.components.combat:DoAttack(v)
 				if mult then
 					local strengthmult = (v.components.inventory and v.components.inventory:ArmorHasTag("heavyarmor") or v:HasTag("heavybody")) and heavymult or mult
 					v:PushEvent("knockback", { knocker = inst, radius = radius + dist, strengthmult = strengthmult, forcelanded = forcelanded })
-				end
-				if targets then
-					targets[v] = true
 				end
 				hit = true
 			end
@@ -345,9 +348,7 @@ local function TossItems(inst, dist, radius)
 		z = z - dist * math.sin(rot)
 	end
 	for i, v in ipairs(TheSim:FindEntities(x, 0, z, radius + TOSS_RADIUS_PADDING, TOSSITEM_MUST_TAGS, TOSSITEM_CANT_TAGS)) do
-		if v.components.mine then
-			v.components.mine:Deactivate()
-		end
+		DeactivateInventoryItemBeforeLaunch(v)
 		if not v.components.inventoryitem.nobounce and v.Physics and v.Physics:IsActive() then
 			TossLaunch(v, inst, 1.2, 0.1)
 		end

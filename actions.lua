@@ -129,6 +129,15 @@ local function CheckTileWithinRange(doer, dest)
     end
 end
 
+local function CheckInsideGolfGame(doer, dest, bufferedaction)
+    local target = bufferedaction and bufferedaction.target or nil
+    if target and target.IsInGolfArea then
+        local x, y, z = doer.Transform:GetWorldPosition()
+        return target:IsInGolfArea(x, z)
+    end
+    return true -- Lost target have the player reach the destination immediately to fail.
+end
+
 local function ShowPourWaterTilePlacer(right_mouse_action)
     if right_mouse_action ~= nil then
 
@@ -186,12 +195,15 @@ local function ExtraDeployDist(doer, dest, bufferedaction)
 			end
 		end
 
-		if use_extra_space then
+        local extra_deploy_distance = invobject and invobject.extra_deploy_distance or nil
+		if use_extra_space or extra_deploy_distance then
+            extra_deploy_distance = extra_deploy_distance or 1
+
 			if invobject and invobject:HasTag("usedeployspacingasoffset") then
 				local inventoryitem = invobject.replica.inventoryitem
-				return (inventoryitem and inventoryitem:DeploySpacingRadius() or 0) + 1
+				return (inventoryitem and inventoryitem:DeploySpacingRadius() or 0) + extra_deploy_distance
 			end
-			return 1
+			return extra_deploy_distance
 		end
 	end
     return 0
@@ -249,6 +261,13 @@ end
 
 local function ExtraWobyForagingDist(doer, dest, bufferedaction)
     return .5 + (doer:HasTag("largecreature") and 1 or 0)
+end
+
+local function ExtraOpenCraftingRange(doer, dest, bufferedaction, arrive_dist)
+    local target = bufferedaction and bufferedaction.target or nil
+    local dist = (target and target.override_open_crafting_range) or TUNING.RESEARCH_MACHINE_DIST - 1
+    return dist > arrive_dist and (dist - arrive_dist)
+        or 0
 end
 
 global("CLIENT_REQUESTED_ACTION")
@@ -327,6 +346,8 @@ Action = Class(function(self, data, instant, rmb, distance, ghost_valid, ghost_e
     self.map_only = data.map_only -- Action only exists from a map.
     self.map_works_on_unexplored = data.map_works_on_unexplored -- Bypass seeable checks.
     self.map_works_on_impassable = data.map_works_on_impassable -- Allow impassable tiles for selection.
+
+    self.keepgroundactionhint = data.keepgroundactionhint -- Allow a nameless target to retain the ground action hint for controllers.
 end)
 
 -- NOTE: High priority is intended to be a shortcut flag for actions that we expect to always dominate if they are available.
@@ -382,9 +403,10 @@ ACTIONS =
     SHAVE = Action({ mount_valid=true }),
 	STORE = Action({ mount_valid=true }),
     RUMMAGE = Action({ priority=-1, mount_valid=true }),
-	DEPLOY = Action({distance=1.1, mount_valid=true, extra_arrive_dist=ExtraDeployDist }),
+    -- DEPLOY_TILEARRIVE should stay a hold action.
+	DEPLOY = Action({distance=1.1, mount_valid=true, extra_arrive_dist=ExtraDeployDist, invalid_hold_action=true }),
     DEPLOY_TILEARRIVE = Action({customarrivecheck=CheckTileWithinRange, theme_music = "farming"}), -- Note: If this is used for non-farming in the future, this would need to be swapped to theme_music_fn
-	DEPLOY_FLOATING = Action({do_not_locomote=true, floating_valid=true }),
+	DEPLOY_FLOATING = Action({do_not_locomote=true, floating_valid=true, invalid_hold_action=true }),
     PLAY = Action({ mount_valid=true }),
     CREATE = Action(),
     JOIN = Action(),
@@ -411,7 +433,7 @@ ACTIONS =
     TELEPORT = Action({ rmb=true, distance=2 }),
     RESETMINE = Action({ priority=3 }),
     ACTIVATE = Action({ priority=2, invalid_hold_action = true }),
-    OPEN_CRAFTING = Action({priority=2, distance = TUNING.RESEARCH_MACHINE_DIST - 1}),
+    OPEN_CRAFTING = Action({priority=2, distance = nil, extra_arrive_dist=ExtraOpenCraftingRange}),
     MURDER = Action({ priority=1, mount_valid=true }),
     HEAL = Action({ mount_valid=true, extra_arrive_dist=ExtraHealRange }),
     INVESTIGATE = Action(),
@@ -705,6 +727,17 @@ ACTIONS =
 
     -- A unique action to equip things on the possessed bodies, but can still give stuff to their inventory
     EQUIPONBODY = Action({ priority=3, canforce=true, rangecheckfn=DefaultRangeCheck }),
+
+    -- Rifts 7
+    CLIMB = Action({ ghost_valid=true, encumbered_valid=true }),
+    STARTVAULTORBTELEPORT = Action({ rmb = true }),
+	VAULTORBTELEPORT_MAP = Action({ customarrivecheck = ArriveAnywhere, rmb = true, map_only=true, map_works_on_unexplored = true, closes_map=true, }),
+
+	-- Crow Carnival 2026
+	GOLF_START_AIMING = Action({ rmb = true, invalid_hold_action = true }),
+	GOLF_STOP_AIMING = Action({ instant = true }),
+	GOLF_START_CHARGING = Action({ distance = 9999, do_not_locomote = true, invalid_hold_action = true }),
+    TERRAFORM_REMOVE = Action({ customarrivecheck = CheckInsideGolfGame, rmb = true, invalid_hold_action = true, keepgroundactionhint = true, }),
 }
 
 ACTIONS_BY_ACTION_CODE = {}
@@ -1301,8 +1334,7 @@ end
 
 ACTIONS.ROW_FAIL.fn = function(act)
     local oar = act.doer.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
-
-    if oar == nil then return false end
+    if (oar == nil) or (oar.components.oar == nil) then return false end
 
     --Can't rely on return false to trigger action fail string because returning
     --false skips the finite uses callback and the oar won't lose durability
@@ -1587,6 +1619,9 @@ ACTIONS.DEPLOY.fn = function(act)
             local container = act.doer.components.inventory or act.doer.components.container
             local obj = container ~= nil and container:RemoveItem(act.invobject) or nil
             if obj ~= nil then
+                obj.prevcontainer = nil
+                obj.prevslot = nil
+
                 local success, reason = obj.components.deployable:Deploy(act_pos, act.doer, act.rotation)
                 if success then
                     return true
@@ -1609,10 +1644,12 @@ ACTIONS.DEPLOY.strfn = function(act)
                 (act.invobject:HasTag("gatebuilder") and "GATE") or
                 (act.invobject:HasTag("portableitem") and "PORTABLE") or
                 (act.invobject:HasTag("boatbuilder") and "WATER") or
+                (act.invobject:HasTag("trap_fumarole") and "HOT_ROCKS") or
+                (act.invobject:HasTag("trap") and "TURRET") or
                 (act.invobject:HasTag("deploykititem") and "TURRET") or
                 (act.invobject:HasTag("eyeturret") and "TURRET") or
                 (act.invobject:HasTag("fertilizer") and "FERTILIZE_GROUND") or
-                (act.invobject:HasTag("graveplanter") and "GRAVEPLANT")    )
+                (act.invobject:HasTag("graveplanter") and "GRAVEPLANT")  )
         or nil
 end
 
@@ -1883,6 +1920,7 @@ ACTIONS.PICK.strfn = function(act)
 	return (act.target:HasTag("pickable_harvest_str") and "HARVEST")
         or (act.target:HasTag("pickable_rummage_str") and "RUMMAGE")
         or (act.target:HasTag("pickable_search_str") and "SEARCH")
+        or (act.target:HasTag("gemsocket") and "UNSOCKET")
         or nil
 end
 
@@ -2886,9 +2924,7 @@ ACTIONS.COMMENT.fn = function(act)
             doer.components.npc_talker:Say(comment_data.speech)
         end
 
-        if doer.components.npc_talker:haslines() then
-            doer.components.npc_talker:donextline()
-        end
+        doer.components.npc_talker:DoNextLine()
     elseif doer.components.talker then
         if comment_data.do_chatter then
             doer.components.talker:Chatter(
@@ -3078,10 +3114,11 @@ ACTIONS.OPEN_CRAFTING.strfn = function(act)
 end
 
 ACTIONS.OPEN_CRAFTING.fn = function(act)
-	if act.doer.components.builder ~= nil then
-		return act.doer.components.builder:UsePrototyper(act.target)
-	end
-	return false;
+	if act.doer.components.builder ~= nil and (act.target == nil or not act.target:HasTag("hideprototyperaction")) then
+        local prototyper = act.target.components.prototyper.redirect_to_prototyper or act.target
+        return act.doer.components.builder:UsePrototyper(prototyper)
+    end
+	return false
 end
 
 ACTIONS.CAST_POCKETWATCH.strfn = function(act)
@@ -3422,9 +3459,13 @@ ACTIONS.DIRECTCOURIER_MAP.maponly_checkvalidpos_fn = function(act)
         return false
     end
 
+    local act_pos = act:GetActionPoint()
+    if act_pos == nil then
+        return false
+    end
+
     local within_radius = TUNING.SKILLS.WALTER.COURIER_DETECTION_RADIUS
     local within_radiussq = within_radius * within_radius
-    local act_pos = act:GetActionPoint()
     local act_posx, act_posz
     local mindsq = math.huge
     local mapent
@@ -5109,8 +5150,10 @@ ACTIONS.REMOVE_FROM_TROPHYSCALE.fn = function(act)
 end
 
 ACTIONS.CYCLE.strfn = function(act)
-    return (act.target ~= nil and act.target:HasTag("singingshell") and "TUNE")
-        or nil
+    return (act.target ~= nil and
+        (act.target:HasTag("singingshell") and "TUNE") or
+        (act.target:HasTag("golf_tee") and "PAR")
+    ) or nil
 end
 
 ACTIONS.CYCLE.fn = function(act)
@@ -6685,7 +6728,12 @@ ACTIONS.MAPSCOUTSELECT_MAP.maponly_checkvalidpos_fn = function(act)
 		return false
 	end
 
-	local x, y, z = act:GetActionPoint():Get()
+    local act_pos = act:GetActionPoint()
+    if act_pos == nil then
+        return false
+    end
+
+	local x, y, z = act_pos:Get()
 	local mapent = FindClosestMapIconInRange("wx78_drone_scout", x, y, z, TUNING.SKILLS.WX78.MAPSCOUTSELECT_DETECTION_RADIUS, act.doer)
 	if mapent == nil then
 		return false, "NOTARGET"
@@ -6719,9 +6767,16 @@ ACTIONS.MAPSCOUT_MAP.maponly_checkvalidpos_fn = function(act)
 		return false
 	elseif not (act.doer.components.skilltreeupdater and act.doer.components.skilltreeupdater:IsActivated("wx78_scoutdrone_1")) then
 		return false
+    elseif not act.target.GetDroneRange then
+        return false
 	end
 
-	local x, y, z = act:GetActionPoint():Get()
+    local act_pos = act:GetActionPoint()
+    if act_pos == nil then
+        return false
+    end
+
+	local x, y, z = act_pos:Get()
     local x1, y1, z1 = act.doer.Transform:GetWorldPosition()
     local validdist = act.target:GetDroneRange(act.doer)
     local dx, dz = x - x1, z - z1
@@ -6787,8 +6842,13 @@ ACTIONS.MAPDELIVER_MAP.maponly_checkvalidpos_fn = function(act)
         return false
     end
 
+    local act_pos = act:GetActionPoint()
+    if act_pos == nil then
+        return false
+    end
+
     local fx, fy, fz = mapent.Transform:GetWorldPosition()
-    local tx, ty, tz = act:GetActionPoint():Get()
+    local tx, ty, tz = act_pos:Get()
     if not IsFlyingPermittedFromPointToPoint(fx, fy, fz, tx, ty, tz) then
         return false
     end
@@ -6816,15 +6876,24 @@ ACTIONS.SWAPBODIES_MAP.maponly_checkvalidpos_fn = function(act)
         return false
     end
 
-    local x, y, z = act:GetActionPoint():Get()
+    local act_pos = act:GetActionPoint()
+    if act_pos == nil then
+        return false
+    end
+
+    local x, y, z = act_pos:Get()
 	local mapent = FindClosestMapIconInRange("wx78_backupbody", x, y, z, TUNING.SKILLS.WX78.REMOTEBODYSWAP_DETECTION_RADIUS, act.doer)
 	if mapent == nil then
         return false, "NOTARGET"
     end
 	x, y, z = mapent.Transform:GetWorldPosition()
+    -- NOTES(JBK): WX-78 exists in both places at once so swapping bodies is WX-78 not teleporting but it is blocked by Wagstaff's barrier to stop the signal.
     local px, py, pz = act.doer.Transform:GetWorldPosition()
-    if not IsTeleportingPermittedFromPointToPoint(px, py, pz, x, y, z) then
-        return false, "NOTARGET"
+    local map = TheWorld.Map
+    if map:IsWagPunkArenaBarrierUp() then
+        if map:IsPointInWagPunkArena(px, py, pz) ~= map:IsPointInWagPunkArena(x, y, z) then
+            return false, "NOTARGET"
+        end
     end
 	return true, nil, x, z, mapent
 end
@@ -6886,5 +6955,135 @@ ACTIONS.EQUIPONBODY.fn = function(act)
         end
         act.target.components.inventory:Equip(act.invobject)
         return true
+    end
+end
+
+ACTIONS.CLIMB.strfn = function(act)
+    return act.doer ~= nil and act.doer:HasTag("playerghost") and "HAUNT" or nil
+end
+
+ACTIONS.CLIMB.fn = function(act)
+    if act.doer ~= nil and
+        act.doer.sg ~= nil and
+        act.doer.sg.currentstate.name == "climb_pre" then
+        if act.target ~= nil and
+            act.target.components.teleporter ~= nil and
+            act.target.components.teleporter:IsActive() then
+            act.doer.sg:GoToState("climb", { teleporter = act.target })
+            return true
+        end
+        act.doer.sg:GoToState("idle")
+    end
+end
+
+ACTIONS.STARTVAULTORBTELEPORT.fn = function(act)
+    if act.invobject and act.invobject.components.vaultorbteleporter then
+        return act.invobject.components.vaultorbteleporter:StartMapAction(act.doer)
+    end
+end
+
+local MAP_VAULTORB_MUST = { "CLASSIFIED", "globalmapicon", "vaultorbteleportdestinationtrackericon" }
+ACTIONS.VAULTORBTELEPORT_MAP.maponly_checkvalidpos_fn = function(act)
+    local target = act.target or act.invobject
+    if act.doer == nil or target == nil then
+        return false
+    end
+
+    local act_pos = act:GetActionPoint()
+    if act_pos == nil then
+        return false
+    end
+
+    local x, y, z = act_pos:Get()
+    local mapent = TheSim:FindEntities(x, y, z, TUNING.VAULT_ORB_REFINED_DETECTION_RADIUS, MAP_VAULTORB_MUST)[1]
+    if mapent == nil then
+        return false, "NOTARGET"
+    end
+
+    x, y, z = mapent.Transform:GetWorldPosition()
+    local px, py, pz = act.doer.Transform:GetWorldPosition()
+
+    if not IsTeleportingPermittedFromPointToPoint(px, py, pz, x, y, z) then
+        return false
+    end
+
+    return true, nil, x, z, mapent
+end
+
+ACTIONS.VAULTORBTELEPORT_MAP.fn = function(act)
+    local valid, reason, act_posx, act_posz, mapent = ACTIONS.VAULTORBTELEPORT_MAP.maponly_checkvalidpos_fn(act)
+    if not valid then
+        return valid, reason
+    end
+
+    local item = act.invobject or act.target
+    if not item or not item.components.inventoryitem then
+        return false, "NOTARGET"
+    end
+
+    if item.components.vaultorbteleporter == nil then
+        return false, "NOTARGET"
+    end
+
+    if not mapent or not mapent._target or not mapent._target:IsValid() then
+        return false, "NOTARGET"
+    end
+
+    return item.components.vaultorbteleporter:Activate(act.doer, mapent._target)
+end
+
+ACTIONS.GOLF_START_AIMING.pre_action_cb = function(act)
+	if act.doer.HUD then
+		act.doer.HUD:CloseSpellWheel()
+	end
+end
+
+ACTIONS.GOLF_START_AIMING.fn = function(act)
+	if act.invobject and act.invobject.components.golfclub and
+		act.invobject.components.equippable and act.invobject.components.equippable:IsEquipped() and
+		act.invobject.components.inventoryitem and act.invobject.components.inventoryitem:IsHeldBy(act.doer)
+	then
+		return act.invobject.components.golfclub:StartAiming(act.doer, act.target)
+	end
+	return false
+end
+
+ACTIONS.GOLF_STOP_AIMING.fn = function(act)
+	local club = act.doer.components.inventory and act.doer.components.inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+	if club and club.components.golfclub then
+		club.components.golfclub:StopAiming()
+	end
+	return true
+end
+
+ACTIONS.GOLF_START_CHARGING.pre_action_cb = function(act)
+	local pt = act:GetActionPoint()
+	if pt then
+		local inventory = act.doer.replica.inventory
+		local club = inventory and inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+		if club then
+			--server and predicted clients
+			if act.doer.components.locomotor then
+				local target = club.components.golfclub and club.components.golfclub:GetTarget()
+				act.doer.Transform:SetRotation((target or act.doer):GetAngleToPoint(pt))
+			end
+			--server and local clients
+			if act.doer.components.playercontroller and club.components.golfclub_reticule then
+				club.components.golfclub_reticule:StartCharging(act.doer, pt)
+			end
+		end
+	end
+end
+
+ACTIONS.GOLF_START_CHARGING.fn = function(act)
+	return true
+end
+
+
+ACTIONS.TERRAFORM_REMOVE.fn = function(act)
+    if act.invobject and act.target then
+        if act.invobject.components.terraformer and not act.invobject.components.terraformer.plow and act.target.components.terraformerremoveable then
+            return act.target.components.terraformerremoveable:TryToRemove(act.doer)
+        end
     end
 end

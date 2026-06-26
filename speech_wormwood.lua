@@ -23,7 +23,7 @@ return{
             NOTMERM = "Scaley friend, help!",
             NOKELP = "only_used_by_wurt",
 --fallback to speech_wilson.lua             HASMERMLEADER = "only_used_by_wurt",
-            NOTAROBOT = "Only for robot friend.",
+            NOTAROBOT = "Only for robot friend",
 --fallback to speech_wilson.lua             NOTMYBACKUP = "only_used_by_wx78",
 --fallback to speech_wilson.lua             TOOMANYBACKUPBODIES = "only_used_by_wx78",
 		},
@@ -205,6 +205,7 @@ return{
             TERRARIUM_COOLDOWN = "Friend is away... will come back later?",
             NOTAMONKEY = "Don't know how to speak Cheeky",
             QUEENBUSY = "She very busy! Maybe try later",
+            CARNIVALGAME_GOLFGAME_NOTREADY = "Friend not finished",
         },
         GIVE_TACKLESKETCH =
 		{
@@ -362,7 +363,7 @@ return{
             NOTAMERM = "Nope. Not mine",
             NOTSOULJARHANDLER = "Don't touch soul friends",
             RESTRICTED = "Nope",
-            NOTAROBOT = "Only for robot friend.",
+            NOTAROBOT = "Only for robot friend",
 --fallback to speech_wilson.lua             NOTMYBACKUP = "only_used_by_wx78",
 --fallback to speech_wilson.lua             TOOMANYBACKUPBODIES = "only_used_by_wx78",
 		},
@@ -398,7 +399,7 @@ return{
             NOTMASTERCHEF = "Not mine",
             NOTSOULJARHANDLER = "Don't touch soul friends",
             RESTRICTED = "Nope",
-            NOTAROBOT = "Only for robot friend.",
+            NOTAROBOT = "Only for robot friend",
 --fallback to speech_wilson.lua             NOTMYBACKUP = "only_used_by_wx78",
 --fallback to speech_wilson.lua             TOOMANYBACKUPBODIES = "only_used_by_wx78",
 		},
@@ -1243,6 +1244,19 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_WX_TASER_POSTEXPLOSION = "only_used_by_wx78", -- Wx has exploded and released all the build up, now they can say something about how invigorating it was.
 --fallback to speech_wilson.lua     ANNOUNCE_WX_NIGHTMARECHARGE = "only_used_by_wx78", -- WX ate/used a nightmare fuel, giving them full charge temporarily
 --fallback to speech_wilson.lua 	ANNOUNCE_WX_NIGHTMAREDISCHARGE = "only_used_by_wx78", -- WX's temporary full charge ran out.
+
+    -- Rifts 7
+
+    ANNOUNCE_MITEGLAND_DEBUFF =
+	{
+		"Hot! Hot!!",
+		"Aaaaa! Burning up!!",
+	},
+	ANNOUNCE_MITEGLAND_DEBUFF_DONE = "Ahhh. Burning gone",
+    ANNOUNCE_GOT_DECON_MISTED = "Feel nice!",
+	ANNOUNCE_VAULT_SHADOW_ASSIST = "Shadow... friends?",
+    ANNOUNCE_HEALINGSALVE_FUMAROLEBUFF_DONE = "Hm. Cooling feeling gone...",--fire immunity expired
+    ANNOUNCE_SECURITY_PULSE_FOLLOWING = "Hello, friend! Follow!", -- Security spark attached to us due to us holding Waymark Compass.
 
 	BATTLECRY =
 	{
@@ -2180,6 +2194,7 @@ return{
         CHESSPIECE_WAGBOSS_ROBOT = "Stone robot friend",
         CHESSPIECE_WAGBOSS_LUNAR = "Friend no hurt more",
         CHESSPIECE_YOTH = "Neigh machine?",
+        CHESSPIECE_VAULT_PILLAR_GUARD = "Little tall rock friend",
 
         CHESSJUNK1 = "Machine stuff",
         CHESSJUNK2 = "Lots of machine stuff",
@@ -2221,6 +2236,7 @@ return{
         CRITTER_PERDLING = "Wee Tweeter is friend now",
 		CRITTER_LUNARMOTHLING = "Flap flap Flappy friend",
         CRITTER_BULBIN = "Don't worry, friend! Safe now",
+        CRITTER_EETS = "Jump friend!",
 
 		CROW =
 		{
@@ -4769,6 +4785,7 @@ return{
 		},
 		CARNIVALDECOR_FIGURE_KIT = "Surprise",
 		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "Surprise",
+		CARNIVALDECOR_FIGURE_KIT_SEASON3 = "Surprise",
 
         CARNIVAL_BALL = "Bouncy bounce", --unimplemented
 		CARNIVAL_SEEDPACKET = "Thanks Tweeters!",
@@ -5901,7 +5918,7 @@ return{
         },
 --fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
 		VAULT_ORB = "Who friend lose ball?",
-        VAULT_LOBBY_EXIT = "Jump!",
+        VAULT_LOBBY_EXIT = "Leave friend string for climbing?",
 		VAULT_CHANDELIER_BROKEN = "Ball fall down",
 
 		ANCIENT_HUSK = "Why, friends? Why?",
@@ -6058,7 +6075,7 @@ return{
         KNIGHT_YOTH =
         {
             GENERIC = "Neigh machine mad", -- Generic quote. It's aggressive.
-            FOLLOWING = "Nice neigh machine.", -- Following the character examining
+            FOLLOWING = "Nice neigh machine", -- Following the character examining
             FOLLOWING_OTHER = "Whose neigh machine?", -- Following another character or mannequin
         },
 
@@ -6126,6 +6143,138 @@ return{
 
         WX78_SHADOWDRONE_DEBUFFER = "Tell robot friend how to fight friends",
         WX78_SHADOWDRONE_HARVESTER = "Friend get things",
+
+        -- Rifts 7
+        STALKER_NPC = "Friend...?",
+
+        MITEGLAND =
+        {
+            GENERIC = "Warm!",
+            COLD = "Oh... where warm go?",
+        },
+        MITEGLAND_COOKED = "Oh! Very hot!",
+
+        BROKEN_FUMAROLETOOLITEM = "Make hot to fix!", -- character should comment that they could melt the pieces back together by heating it.
+        FUMAROLEAXE =
+		{
+			GENERIC = "Going to break!", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "No more warm?", -- The next state, its lukewarm, no cracks.
+			WARM = "Warm chopper", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "Ah! Hot!!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLEPICKAXE =
+		{
+			GENERIC = "Going to break!", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "No more warm?", -- The next state, its lukewarm, no cracks.
+			WARM = "Warm pokey", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "Ah! Hot!!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLEHAMMER =
+		{
+			GENERIC = "Going to break!", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "No more warm?", -- The next state, its lukewarm, no cracks.
+			WARM = "Warm smasher", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "Ah! Hot!!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLESHOVEL =
+		{
+			GENERIC = "Going to break!", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "No more warm?", -- The next state, its lukewarm, no cracks.
+			WARM = "Warm digger", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "Ah! Hot!!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLE_FARM_HOE =
+		{
+			GENERIC = "Going to break!", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "No more warm?", -- The next state, its lukewarm, no cracks.
+			WARM = "Warm dirt mover", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "Ah! Hot!!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        -- This trap is a cluster of rocks gets heated and deals fire damage to creatures (including players!) on top
+        TRAP_FUMAROLE =
+        {
+            HELD = "Hot rocks", -- When held in the inventory.
+            GENERIC = "Oh. Not hot anymore", -- Coldest state, the trap is ineffective.
+            WARM = "Careful! Hot!", -- Warm, a bit red hot, it does some damage.
+            HOT = "Hot ground! Very hot!!", -- Super hot, it's doing full fire damage.
+        },
+
+        HEALINGSALVE_FUMAROLE = "Ahhh. Feel nice",
+
+		VAULT_PILLAR_GUARD = "Mean rock!",
+		VAULT_PILLAR_GUARD_CRAFTED = "Tall rock friend nice!",
+		VAULT_PILLAR_GUARD_DORMANT = "Tall rock friend",
+		VAULT_PILLAR_GUARD_DORMANT_CRAFTED = "Why friend still sleeping?",
+		VAULT_PILLAR_GUARD_CONSTR = "Baby rock friend soon tall rock friend",
+		VAULT_PILLAR_GUARD_CONSTR_PLANS = "Where put baby rock friend?",
+		VAULT_CRAWLER =
+		{
+			GENERIC = "Rolly glow bug",
+			SOCKETED = "Rolly glow bug home",
+		},
+
+        VAULT_DECON_DOOR = "Up and down, up and down",
+        VAULT_DECON_MISTER = "Spritz spritz!",
+		VAULT_KEY_ACTIVATOR = "Oh? Need something...",
+		VAULT_CRAWLER_LEVER = "Pull?",
+        VAULT_KEY = "Scary...",
+        VAULT_KEY_PEDESTAL =
+        {
+            GENERIC = "Scared to take", -- Keystone is on it, ready to take
+            PICKED = "Gone", -- No more keystone on it, we already took it, or someone else did.
+        },
+        VAULT_ORB_REFINED = "Shiny friend!",
+        VAULT_PILLAR_GUARD_PIECE = "For tall friend",
+        VAULT_REFINER_PEDESTAL = "Make old things",
+
+        VAULT_COMPASS =
+        {
+            GENERIC = "Show which way to go?", -- Pointing us to the teleporters leading to the key room
+            NOTVAULT = "Hm? Not work?", -- We're not in the vault, so its in an ineffective state.
+            KEYROOM = "Found it!", -- We're already in the key room! Compass marker is in a success state.
+        },
+
+        CEILING_ROPE = "Helpful friend",
+        VAULT_KEY_EXIT = "Nowhere tie helpful friend?",--There's no where to tie a rope. Exit, but no re-entry.
+
+        -- Crow Carnival 2026
+
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "Fun friend",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "Middle friend",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "Tricky friend",
+        CARNIVALGAME_GOLFGAME_KIT_DIY = "Make special friend!",
+
+        CARNIVALGAME_GOLF_TEE =
+        {
+            GENERIC = "Need shiny?",  -- Ready to take a game token, reference other carnival game strings
+            PLAYING = "Already has shiny", -- The game is active and in play
+            INACTIVE = "Friend not finished", -- The game token slot is covered, due to the course not being fully complete (e.g. hole marker isn't placed)
+        },
+        CARNIVALGAME_GOLF_HOLE = "Ball friend go here",
+
+        CARNIVALGAME_GOLF_TEE_KIT = "Where start friend?",
+        CARNIVALGAME_GOLF_HOLE_KIT = "Where end friend?",
+
+        CARNIVALGAME_GOLFCLUB = "Gentle hit ball friend",
+        CARNIVALGAME_GOLFBALL = "Sorry, ball friend",
+
+        CARNIVALGAME_GOLFPROP_FENCE = "Keep friend inside",
+
+        CARNIVALGAME_GOLFPROP_SPINNER = "Dizzy friend", -- All 4 spin plates(size/rotation) use the same inspect
+        CARNIVALGAME_GOLFPROP_CUTOUT = "Fake friend?", -- All 10 prop wood cutouts use the same inspect
+        CARNIVALGAME_GOLFPROP_MOVINGWALL = "Up friend, down friend", -- All colored moving walls use this space inspect
+
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "Eat ball friend?", -- a fake wormhole, that lets the ball travel to another random wormhole
+
+        CARNIVALGAME_GOLFPROP_SPRING = "Bye ball friend!", -- spring that pops up to launch the ball
+
+        CARNIVALGAME_GOLFPROP_FAN = "Windy friend", -- fan that blows wind and pushes in a direction
+
     },
 
     DESCRIBE_GENERIC = "Friend?",

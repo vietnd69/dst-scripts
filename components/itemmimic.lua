@@ -1,3 +1,5 @@
+local SourceModifierList = require("util/sourcemodifierlist")
+
 local function on_equipped(inst, data)
     local self = inst.components.itemmimic
 
@@ -97,6 +99,8 @@ local ACCEPTABLE_ACTIONS =
 local ItemMimic = Class(function(self, inst)
     self.inst = inst
 
+    self.pausesources = SourceModifierList(inst, false, SourceModifierList.boolean)
+
     -- Machine reactions (to cover "free" light sources, mostly)
     self._on_interacted_with = function(inst2)
         inst2:DoTaskInTime(10*FRAMES, interacted_with_redirect)
@@ -104,6 +108,16 @@ local ItemMimic = Class(function(self, inst)
     inst:ListenForEvent("machineturnedon", self._on_interacted_with)
     inst:ListenForEvent("machineturnedoff", self._on_interacted_with)
     inst:ListenForEvent("percentusedchange", self._on_interacted_with)
+
+    self.OnRefreshPauseStates = function(inst, data)
+        local owner = data and data.owner or inst.components.inventoryitem and inst.components.inventoryitem:GetGrandOwner() or nil
+        if (data == nil or not data.forceadd) and ShouldItemMimicBeRevealedFor(inst, owner) then
+            self:RemovePauseSource(self.inst, "socket_shadow_mimicry") -- HACK coupling these components together.
+        else
+            self:AddPauseSource(self.inst, "socket_shadow_mimicry") -- HACK coupling these components together.
+        end
+    end
+    inst:ListenForEvent("itemmimic_refreshpausestates", self.OnRefreshPauseStates)
 
     -- Equippable reactions
     self._on_do_attack = function(owner, data)
@@ -132,7 +146,55 @@ local ItemMimic = Class(function(self, inst)
 
     local auto_reveal_task_time = TUNING.ITEMMIMIC_AUTO_REVEAL_BASE + math.random() * TUNING.ITEMMIMIC_AUTO_REVEAL_RAND
     self._auto_reveal_task = inst:DoTaskInTime(auto_reveal_task_time, on_timed_out)
+
+    if self.inst.components.inventoryitem then
+        self.hasitemsource = true
+        MakeComponentAnInventoryItemSource(self)
+    end
 end)
+
+function ItemMimic:OnRemoveFromEntity()
+    if self.hasitemsource then
+        RemoveComponentInventoryItemSource(self)
+        self.hasitemsource = nil
+    end
+end
+
+--------------------------------------------------------------------------
+-- MakeComponentAnInventoryItemSource
+
+function ItemMimic:OnItemSourceRemoved(owner)
+    self.OnRefreshPauseStates(self.inst)
+end
+
+function ItemMimic:OnItemSourceNewOwner(owner)
+    self.OnRefreshPauseStates(self.inst)
+end
+
+--------------------------------------------------------------------------
+
+function ItemMimic:AddPauseSource(source, reason)
+    self.pausesources:SetModifier(source, true, reason)
+    if self._auto_reveal_task then
+        self.reveal_time_remaining = GetTaskRemaining(self._auto_reveal_task)
+        self._auto_reveal_task:Cancel()
+        self._auto_reveal_task = nil
+    end
+end
+
+function ItemMimic:RemovePauseSource(source, reason)
+    self.pausesources:RemoveModifier(source, reason)
+    if not self.pausesources:Get() then
+        if self.reveal_time_remaining then
+            if self._auto_reveal_task then
+                self._auto_reveal_task:Cancel()
+                self._auto_reveal_task = nil
+            end
+            self._auto_reveal_task = self.inst:DoTaskInTime(self.reveal_time_remaining, on_timed_out)
+            self.reveal_time_remaining = nil
+        end
+    end
+end
 
 function ItemMimic:TurnEvil(target)
     if self.inst.components.inventoryitem then
@@ -170,6 +232,10 @@ end
 
 -- Update reaction
 function ItemMimic:LongUpdate(dt)
+    if self.pausesources:Get() then
+        return
+    end
+
     if self._auto_reveal_task then
         local remaining = GetTaskRemaining(self._auto_reveal_task) - dt
         self._auto_reveal_task:Cancel()
@@ -189,7 +255,9 @@ function ItemMimic:OnSave()
         noloot = self.noloot,
     }
 
-    if self._auto_reveal_task then
+    if self.reveal_time_remaining then
+        savedata.reveal_time_remaining = self.reveal_time_remaining
+    elseif self._auto_reveal_task then
         savedata.reveal_time_remaining = GetTaskRemaining(self._auto_reveal_task)
     end
 
@@ -205,7 +273,11 @@ function ItemMimic:OnLoad(data)
                 self._auto_reveal_task = nil
             end
 
-            self._auto_reveal_task = self.inst:DoTaskInTime(data.reveal_time_remaining, on_timed_out)
+            if not self.pausesources:Get() then
+                self._auto_reveal_task = self.inst:DoTaskInTime(data.reveal_time_remaining, on_timed_out)
+            else
+                self.reveal_time_remaining = data.reveal_time_remaining
+            end
         end
     end
 end

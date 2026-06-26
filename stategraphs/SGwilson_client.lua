@@ -281,6 +281,7 @@ local actionhandlers =
 			return not (inst.sg:HasStateTag("prehammer") or inst:HasTag("prehammer")) and "hammer_start" or nil
         end),
     ActionHandler(ACTIONS.TERRAFORM, "terraform"),
+    ActionHandler(ACTIONS.TERRAFORM_REMOVE, "terraform"),
     ActionHandler(ACTIONS.DIG,
         function(inst)
             if inst:HasTag("beaver") then
@@ -352,7 +353,10 @@ local actionhandlers =
             if action.invobject and action.invobject:HasTag("graveplanter") then
                 return "graveurn_out"
             end
-            return action.invobject and action.invobject:HasTag("projectile") and "throw_deploy" or "doshortaction" 
+            return action.invobject and
+                (action.invobject:HasTag("projectile") and "throw_deploy")
+                or (action.invobject:HasTag("trap_fumarole") and "give")
+                or "doshortaction"
         end),
     ActionHandler(ACTIONS.DEPLOY_TILEARRIVE, "doshortaction"),
 	ActionHandler(ACTIONS.DEPLOY_FLOATING, "float_action"),
@@ -988,6 +992,18 @@ local actionhandlers =
     end),
 
     ActionHandler(ACTIONS.EQUIPONBODY, "give"),
+
+    -- Rifts 7
+    ActionHandler(ACTIONS.CLIMB, "climb_pre"),
+    ActionHandler(ACTIONS.STARTVAULTORBTELEPORT, "crushitemcast_holding"),
+    ActionHandler(ACTIONS.VAULTORBTELEPORT_MAP, "crushitemcast_trigger"),
+
+	-- Crow Carnival 2026
+	ActionHandler(ACTIONS.GOLF_START_AIMING, "club_set"),
+	ActionHandler(ACTIONS.GOLF_START_CHARGING, function(inst)
+		inst.sg.statemem.charging = true
+		return "club_putt_pre"
+	end),
 }
 
 local events =
@@ -3140,8 +3156,12 @@ local states =
 			--     (even for things like makeballoon or shave)
 			--     switch to server sound when action actually executes on server
             inst.SoundEmitter:PlaySound("dontstarve/wilson/make_trap", "make_preview")
-            inst.AnimState:PlayAnimation("build_pre")
-            inst.AnimState:PushAnimation("build_loop", true)
+            if inst.bufferedaction ~= nil and inst.bufferedaction.target ~= nil then
+                local rider = inst.replica.rider
+                inst.sg.statemem.dohighaction = (inst.bufferedaction.target:HasTag("high_dolongaction") and (rider == nil or not rider:IsRiding())) or false
+            end
+            inst.AnimState:PlayAnimation(inst.sg.statemem.dohighaction and "construct_pre" or "build_pre")
+            inst.AnimState:PushAnimation(inst.sg.statemem.dohighaction and "construct_loop" or "build_loop", true)
 
             inst:PerformPreviewBufferedAction()
             inst.sg:SetTimeout(TIMEOUT)
@@ -3160,14 +3180,14 @@ local states =
                     inst.sg:GoToState("idle", "noanim")
                 end
             elseif inst.bufferedaction == nil then
-                inst.AnimState:PlayAnimation("build_pst")
+                inst.AnimState:PlayAnimation(inst.sg.statemem.dohighaction and "construct_pst" or "build_pst")
                 inst.sg:GoToState("idle", true)
             end
         end,
 
         ontimeout = function(inst)
             inst:ClearBufferedAction()
-            inst.AnimState:PlayAnimation("build_pst")
+            inst.AnimState:PlayAnimation(inst.sg.statemem.dohighaction and "construct_pst" or "build_pst")
             inst.sg:GoToState("idle", true)
         end,
 
@@ -3955,6 +3975,38 @@ local states =
     },
 
     State{
+        name = "climb_pre",
+        tags = { "doing", "busy", "canrotate" },
+        server_states = { "climb_pre", "climb" },
+
+        onenter = function(inst)
+            inst.components.locomotor:Stop()
+
+            inst.AnimState:PlayAnimation("give")
+
+            inst:PerformPreviewBufferedAction()
+            inst.sg:SetTimeout(TIMEOUT)
+        end,
+
+        onupdate = function(inst)
+            if inst.sg:ServerStateMatches() then
+                if inst.entity:FlattenMovementPrediction() then
+                    inst.sg:GoToState("idle", "noanim")
+                end
+            elseif inst.bufferedaction == nil then
+                inst.AnimState:PlayAnimation("give_pst")
+                inst.sg:GoToState("idle", true)
+            end
+        end,
+
+        ontimeout = function(inst)
+            inst:ClearBufferedAction()
+            inst.AnimState:PlayAnimation("give_pst")
+            inst.sg:GoToState("idle", true)
+        end,
+    },
+
+    State{
         name = "castspell",
         tags = { "doing", "busy", "canrotate" },
 		server_states = { "castspell" },
@@ -4141,6 +4193,96 @@ local states =
 		ontimeout = function(inst)
 			inst:ClearBufferedAction()
 			inst.sg:GoToState("idle")
+		end,
+	},
+
+    State{
+		name = "crushitemcast_holding",
+		tags = { "doing", "busy" },
+		server_states = { "crushitemcast_holding" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+            inst.Transform:SetPredictedNoFaced()
+            inst.AnimState:PlayAnimation("useitem_pre")
+            inst.AnimState:PushAnimation("remotecast_nodir_pre", false)
+            inst.AnimState:PushAnimation("remotecast_nodir_loop", true)
+
+			inst:PerformPreviewBufferedAction()
+			inst.sg:SetTimeout(TIMEOUT)
+		end,
+
+		timeline =
+		{
+			FrameEvent(9, function(inst)
+				inst.sg:RemoveStateTag("busy")
+			end),
+		},
+
+		onupdate = function(inst)
+			if inst.sg:ServerStateMatches() then
+				if inst.entity:FlattenMovementPrediction() then
+					inst.sg:GoToState("idle", "noanim")
+				end
+			elseif inst.bufferedaction == nil then
+				inst.AnimState:PlayAnimation("remotecast_nodir_pst")
+                inst.AnimState:PushAnimation("useitem_pst", false)
+				inst.sg:GoToState("idle", true)
+			end
+		end,
+
+		ontimeout = function(inst)
+			inst:ClearBufferedAction()
+			inst.AnimState:PlayAnimation("remotecast_nodir_pst")
+            inst.AnimState:PushAnimation("useitem_pst", false)
+			inst.sg:GoToState("idle", true)
+		end,
+
+		onexit = function(inst)
+            inst.Transform:ClearPredictedFacingModel()
+		end,
+	},
+
+	State{
+		name = "crushitemcast_trigger",
+		tags = { "doing", "busy" },
+		server_states = { "crushitemcast_trigger" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+            inst.Transform:SetPredictedNoFaced()
+			if inst.AnimState:IsCurrentAnimation("remotecast_nodir_pre") or inst.AnimState:IsCurrentAnimation("remotecast_nodir_loop") then
+                inst.AnimState:PlayAnimation("remotecast_nodir_trigger")
+            else
+                inst.AnimState:PlayAnimation("remotecast_nodir_pre")
+                inst.AnimState:PushAnimation("remotecast_nodir_trigger", false)
+			end
+
+			inst:PerformPreviewBufferedAction()
+			inst.sg:SetTimeout(0.5)
+		end,
+
+		onupdate = function(inst)
+			if inst.sg:ServerStateMatches() then
+				if inst.entity:FlattenMovementPrediction() then
+					inst.sg:GoToState("idle", "noanim")
+				end
+			elseif inst.bufferedaction == nil then
+                inst.AnimState:PlayAnimation("remotecast_nodir_pst")
+                inst.AnimState:PushAnimation("useitem_pst", false)
+				inst.sg:GoToState("idle", true)
+			end
+		end,
+
+		ontimeout = function(inst)
+			inst:PerformBufferedAction()
+            inst.AnimState:PlayAnimation("remotecast_nodir_pst")
+            inst.AnimState:PushAnimation("useitem_pst", false)
+			inst.sg:GoToState("idle", true)
+		end,
+
+		onexit = function(inst)
+            inst.Transform:ClearPredictedFacingModel()
 		end,
 	},
 
@@ -8408,6 +8550,123 @@ local states =
 				inst.entity:SetIsPredictingMovement(true)
 				inst:RemoveTag("nopredict_client")
 			end
+		end,
+	},
+
+	State{
+		name = "club_set",
+		tags = { "doing", "busy", "nodragwalk" },
+		server_states = { "club_set" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("club_set_pre")
+			inst.AnimState:PushAnimation("club_set_loop")
+
+			if TheInput:ControllerAttached() then
+				inst.sg:AddStateTag("overridelocomote")
+			end
+
+			inst:PerformPreviewBufferedAction()
+			inst.sg:SetTimeout(TIMEOUT)
+		end,
+
+		onupdate = function(inst)
+			if inst.sg.statemem.aiming then
+				if not inst:HasTag("golf_aiming") then
+					inst.sg.statemem.synced = false
+					inst.sg:GoToState("idle", "noanim")
+					return
+				end
+			elseif inst.sg.statemem.synced then
+				if not inst.sg:ServerStateMatches() then
+					inst.sg.statemem.synced = false
+					inst.sg:GoToState("idle", "noanim")
+					return
+				elseif inst:HasTag("golf_aiming") then
+					inst.sg.statemem.aiming = true
+					ClearCachedServerState(inst)
+				end
+			elseif inst.sg:ServerStateMatches() then
+				if inst.entity:FlattenMovementPrediction() then
+					inst.sg.statemem.synced = true
+					inst.entity:SetIsPredictingMovement(false)
+					inst.sg:RemoveStateTag("busy")
+					if inst:HasTag("golf_aiming") then
+						inst.sg.statemem.aiming = true
+						ClearCachedServerState(inst)
+					end
+				end
+			elseif inst.bufferedaction == nil then
+				inst.AnimState:PlayAnimation("club_set_pst")
+				inst.sg:GoToState("idle", true)
+			end
+
+			if TheInput:ControllerAttached() then
+				inst.sg:AddStateTag("overridelocomote")
+			else
+				inst.sg:RemoveStateTag("overridelocomote")
+			end
+		end,
+
+		ontimeout = function(inst)
+			if not inst.sg.statemem.synced then
+				inst:ClearBufferedAction()
+				inst.AnimState:PlayAnimation("club_set_pst")
+				inst.sg:GoToState("idle", true)
+			end
+		end,
+
+		events =
+		{
+			EventHandler("locomote", function(inst)
+				return inst.sg:HasStateTag("overridelocomote")
+			end),
+		},
+
+		onexit = function(inst)
+			if inst.sg.statemem.synced then
+				inst.entity:SetIsPredictingMovement(true)
+
+				if not inst.sg.statemem.charging then
+					local inventory = inst.replica.inventory
+					local club = inventory and inventory:GetEquippedItem(EQUIPSLOTS.HANDS)
+					if club and club.components.golfclub_reticule then
+						club.components.golfclub_reticule:CancelTarget_Client()
+					end
+				end
+			end
+		end,
+	},
+
+	State{
+		name = "club_putt_pre",
+		tags = { "busy" },
+		server_states = { "club_putt_pre", "club_putt", "club_swing" },
+
+		onenter = function(inst)
+			inst.components.locomotor:Stop()
+			inst.AnimState:PlayAnimation("club_putt_pre")
+			inst.AnimState:PushAnimation("club_putt_lag", false)
+			inst:PerformPreviewBufferedAction()
+			inst.sg:SetTimeout(TIMEOUT)
+		end,
+
+		onupdate = function(inst)
+			if inst.sg:ServerStateMatches() then
+				if inst.entity:FlattenMovementPrediction() then
+					inst.sg:GoToState("idle", "noanim")
+				end
+			elseif inst.bufferedaction == nil then
+				inst.AnimState:PlayAnimation("club_set_pst")
+				inst.sg:GoToState("idle", true)
+			end
+		end,
+
+		ontimeout = function(inst)
+			inst:ClearBufferedAction()
+			inst.AnimState:PlayAnimation("club_set_pst")
+			inst.sg:GoToState("idle", true)
 		end,
 	},
 }

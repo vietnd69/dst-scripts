@@ -205,6 +205,7 @@ return{
             TERRARIUM_COOLDOWN = "I shall await the small tree's return before presenting it with another offering.",
             NOTAMONKEY = "Speak plainly! I understand not thine chittering.",
             QUEENBUSY = "Something else hath caught her attention.",
+            CARNIVALGAME_GOLFGAME_NOTREADY = "This arena awaiteth its completion!",
         },
         GIVE_TACKLESKETCH =
 		{
@@ -1240,6 +1241,19 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_WX_NIGHTMARECHARGE = "only_used_by_wx78", -- WX ate/used a nightmare fuel, giving them full charge temporarily
 --fallback to speech_wilson.lua 	ANNOUNCE_WX_NIGHTMAREDISCHARGE = "only_used_by_wx78", -- WX's temporary full charge ran out.
 
+    -- Rifts 7
+
+    ANNOUNCE_MITEGLAND_DEBUFF =
+	{
+		"I burn from within!",
+		"My belly is aflame!",
+	},
+	ANNOUNCE_MITEGLAND_DEBUFF_DONE = "The fire within hath subsided.",
+    ANNOUNCE_GOT_DECON_MISTED = "It doth banish the shadows!",
+	ANNOUNCE_VAULT_SHADOW_ASSIST = "Lo! A dark warband doth come to mine aid!",
+    ANNOUNCE_HEALINGSALVE_FUMAROLEBUFF_DONE = "Once again may the fire scorch mine mortal hide.",--fire immunity expired
+    ANNOUNCE_SECURITY_PULSE_FOLLOWING = "It seemeth I have a new companion.", -- Security spark attached to us due to us holding Waymark Compass.
+
 	BATTLECRY =
 	{
 		GENERIC = "Valhalla awaits!",
@@ -2176,6 +2190,7 @@ return{
         CHESSPIECE_WAGBOSS_ROBOT = "The iron golem was indeed misguided.",
         CHESSPIECE_WAGBOSS_LUNAR = "This tribute to the unhallowed giant is an abomination unto itself.",
         CHESSPIECE_YOTH = "This warrior's loyalty was as fleeting as the wind.",
+        CHESSPIECE_VAULT_PILLAR_GUARD = "Ah yes, the once towering golem!",
 
         CHESSJUNK1 = "It's only a pile of fallen warriors.",
         CHESSJUNK2 = "More fallen mechanical warriors.",
@@ -2217,6 +2232,7 @@ return{
         CRITTER_PERDLING = "Not a raven, but wise nonetheless.",
 		CRITTER_LUNARMOTHLING = "Mine lunar friend!",
         CRITTER_BULBIN = "I forgive her vegetable ways.",
+        CRITTER_EETS = "How can you fight with no arms?",
 
 		CROW =
 		{
@@ -4765,6 +4781,7 @@ return{
 		},
 		CARNIVALDECOR_FIGURE_KIT = "A box of mystery.",
 		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "A box of mystery.",
+		CARNIVALDECOR_FIGURE_KIT_SEASON3 = "A box of mystery.",
 
         CARNIVAL_BALL = "This may be useful for testing my companions' reflexes.", --unimplemented
 		CARNIVAL_SEEDPACKET = "'Tis food for birds, not Vikings.",
@@ -5897,7 +5914,7 @@ return{
         },
 --fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
 		VAULT_ORB = "What purpose hath this blasted bauble?",
-        VAULT_LOBBY_EXIT = "I hath no fear in hurling myself headlong into the abyss.",
+        VAULT_LOBBY_EXIT = "I ought to let down a length of rope, should I wish to venture this way again.",
 		VAULT_CHANDELIER_BROKEN = "Who hath cast thee down from the heavens, little star?",
 
 		ANCIENT_HUSK = "What treachery hath transpired here?",
@@ -6122,6 +6139,138 @@ return{
 
         WX78_SHADOWDRONE_DEBUFFER = "'Tis a spy for the metal warrior.",
         WX78_SHADOWDRONE_HARVESTER = "The metal warrior's little plunderer.",
+
+        -- Rifts 7
+        STALKER_NPC = "The enemy of my enemy is my ally.",
+
+        MITEGLAND =
+        {
+            GENERIC = "It holds the fire of Logi within it.",
+            COLD = "It burns no more.",
+        },
+        MITEGLAND_COOKED = "Roasted entrails.",
+
+        BROKEN_FUMAROLETOOLITEM = "Some heat shall give it life anew.", -- character should comment that they could melt the pieces back together by heating it.
+        FUMAROLEAXE =
+		{
+			GENERIC = "It shall not weather much further use.", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "The fire burns low within it.", -- The next state, its lukewarm, no cracks.
+			WARM = "It offers respite from the cold.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "It still bears the heat of the forge!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLEPICKAXE =
+		{
+			GENERIC = "It shall not weather much further use.", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "The fire burns low within it.", -- The next state, its lukewarm, no cracks.
+			WARM = "It offers respite from the cold.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "It still bears the heat of the forge!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLEHAMMER =
+		{
+			GENERIC = "It shall not weather much further use.", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "The fire burns low within it.", -- The next state, its lukewarm, no cracks.
+			WARM = "It offers respite from the cold.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "It still bears the heat of the forge!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLESHOVEL =
+		{
+			GENERIC = "It shall not weather much further use.", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "The fire burns low within it.", -- The next state, its lukewarm, no cracks.
+			WARM = "It offers respite from the cold.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "It still bears the heat of the forge!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLE_FARM_HOE =
+		{
+			GENERIC = "It shall not weather much further use.", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "The fire burns low within it.", -- The next state, its lukewarm, no cracks.
+			WARM = "It offers respite from the cold.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "It still bears the heat of the forge!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        -- This trap is a cluster of rocks gets heated and deals fire damage to creatures (including players!) on top
+        TRAP_FUMAROLE =
+        {
+            HELD = "A warrior is always prepared.", -- When held in the inventory.
+            GENERIC = "Its flame is spent.", -- Coldest state, the trap is ineffective.
+            WARM = "My enemies shall regret crossing me... or crossing that.", -- Warm, a bit red hot, it does some damage.
+            HOT = "Woe to the toes of all who pursue me!", -- Super hot, it's doing full fire damage.
+        },
+
+        HEALINGSALVE_FUMAROLE = "A ward against flame. 'Tis also quite moisturizing for the skin.",
+
+		VAULT_PILLAR_GUARD = "Thine charge is a noble one, but I cannot let thee stand in my way!",
+		VAULT_PILLAR_GUARD_CRAFTED = "Stand watch, noble sentry!",
+		VAULT_PILLAR_GUARD_DORMANT = "A formidable structure.",
+		VAULT_PILLAR_GUARD_DORMANT_CRAFTED = "It doth slumber 'til the spark of life be bestowed upon it!",
+		VAULT_PILLAR_GUARD_CONSTR = "It hath the makings of a formidable thing!",
+		VAULT_PILLAR_GUARD_CONSTR_PLANS = "Where shall I fortify mine defenses?",
+		VAULT_CRAWLER =
+		{
+			GENERIC = "Art thou my enemy, or my guiding light?",
+			SOCKETED = "Ha! Right on the mark!",
+		},
+
+        VAULT_DECON_DOOR = "No barricade can contain me!",
+        VAULT_DECON_MISTER = "Defenses against dark magicks.",
+		VAULT_KEY_ACTIVATOR = "There art something missing... but what?",
+		VAULT_CRAWLER_LEVER = "Steel thyself, and pull!",
+        VAULT_KEY = "'Tis the key to our salvation!",
+        VAULT_KEY_PEDESTAL =
+        {
+            GENERIC = "'Tis my bounty to claim.", -- Keystone is on it, ready to take
+            PICKED = "There is nought.", -- No more keystone on it, we already took it, or someone else did.
+        },
+        VAULT_ORB_REFINED = "'Tis a potent orb of old.",
+        VAULT_PILLAR_GUARD_PIECE = "Behold! A piece of the golem!",
+        VAULT_REFINER_PEDESTAL = "Though battle be my calling, I do not loathe the smith's craft.",
+
+        VAULT_COMPASS =
+        {
+            GENERIC = "Guide me true, o infernal device!", -- Pointing us to the teleporters leading to the key room
+            NOTVAULT = "'Tis of no use to me here.", -- We're not in the vault, so its in an ineffective state.
+            KEYROOM = "I am arrived!", -- We're already in the key room! Compass marker is in a success state.
+        },
+
+        CEILING_ROPE = "With this, I shall make mine ascent!",
+        VAULT_KEY_EXIT = "Nowhere to anchor a rope? A true warrior needeth no second plan.",--There's no where to tie a rope. Exit, but no re-entry.
+
+        -- Crow Carnival 2026
+
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "I couldst defeat this arena whilst I slumber!",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "Neither gentle meadow, nor cruel gauntlet.",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "I stand unshaken before any contest, no matter how arduous.",
+        CARNIVALGAME_GOLFGAME_KIT_DIY = "A warrior charts her own course!",
+
+        CARNIVALGAME_GOLF_TEE =
+        {
+            GENERIC = "It demandeth a tribute!",  -- Ready to take a game token, reference other carnival game strings
+            PLAYING = "The toll is paid, let the proving begin!", -- The game is active and in play
+            INACTIVE = "This arena awaiteth its completion!", -- The game token slot is covered, due to the course not being fully complete (e.g. hole marker isn't placed)
+        },
+        CARNIVALGAME_GOLF_HOLE = "'Tis already waving the flag of surrender!",
+
+        CARNIVALGAME_GOLF_TEE_KIT = "To mark the place of the ball's departure.",
+        CARNIVALGAME_GOLF_HOLE_KIT = "I shall decide the ball's destiny!",
+
+        CARNIVALGAME_GOLFCLUB = "A weapon of precision, not brute force.",
+        CARNIVALGAME_GOLFBALL = "Let it roll forth into glory!",
+
+        CARNIVALGAME_GOLFPROP_FENCE = "It keeps the field of battle contained.",
+
+        CARNIVALGAME_GOLFPROP_SPINNER = "Restless disc of chaos!", -- All 4 spin plates(size/rotation) use the same inspect
+        CARNIVALGAME_GOLFPROP_CUTOUT = "They stand as memories made manifest in timber.", -- All 10 prop wood cutouts use the same inspect
+        CARNIVALGAME_GOLFPROP_MOVINGWALL = "Rise and fall as thou wilt, I shall still prevail!", -- All colored moving walls use this space inspect
+
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "Thou mayst whisk my ball away, but not mine resolve!", -- a fake wormhole, that lets the ball travel to another random wormhole
+
+        CARNIVALGAME_GOLFPROP_SPRING = "Upward and onward!", -- spring that pops up to launch the ball
+
+        CARNIVALGAME_GOLFPROP_FAN = "Keep thy cursed winds from mine ball!", -- fan that blows wind and pushes in a direction
+
     },
 
     DESCRIBE_GENERIC = "It is an artifact of this realm.",

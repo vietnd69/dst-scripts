@@ -224,6 +224,7 @@ local prefabs =
     "writeable_classified",
     "container_classified",
     "container_opener",
+	"container_closed_receiveitem_classified",
     "constructionsite_classified",
 
     "dummytarget",

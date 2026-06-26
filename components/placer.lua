@@ -399,6 +399,7 @@ function Placer:UpdateAxisAlignedHelpers(dt)
     end
 end
 
+local TrapFumaroleUtil = require("prefabs/trap_fumarole_util")
 function Placer:OnUpdate(dt)
     local rotating_from_boat_center
     local hide_if_cannot_build
@@ -428,6 +429,8 @@ function Placer:OnUpdate(dt)
                 self.inst.Transform:SetPosition(pt:Get())
                 hide_if_cannot_build = true
             end
+        elseif self.snap_to_half_tile then
+            self.inst.Transform:SetPosition(TrapFumaroleUtil.GetTrapCenterPoint(pt:Get()))
         else
             self.axisalignedplacementtoggle = self.axisalignedplacementallowedbyitem and TheInput:IsControlPressed(CONTROL_AXISALIGNEDPLACEMENT_TOGGLEMOD)
             if self:IsAxisAlignedPlacement() then
@@ -464,6 +467,8 @@ function Placer:OnUpdate(dt)
         else
             self.inst.Transform:SetPosition(x, 0, z)
         end
+    elseif self.snap_to_half_tile then
+        self.inst.Transform:SetPosition(TrapFumaroleUtil.GetTrapCenterPoint(ThePlayer.entity:LocalToWorldSpace(0, 0, 0)))
     elseif self.onground then
         --V2C: this will keep ground orientation accurate and smooth,
         --     but unfortunately position will be choppy compared to parenting
@@ -503,7 +508,11 @@ function Placer:OnUpdate(dt)
     if self.fixedcameraoffset ~= nil and not rotating_from_boat_center then
         local rot = self.fixedcameraoffset - TheCamera:GetHeading() -- rotate against the camera
         local offset = self.rotationoffset ~= nil and self.rotationoffset or 0
-        self.inst.Transform:SetRotation(rot + offset)
+        rot = rot + offset
+        if self.fixedcameraoffset_nearestangle then
+            rot = math.floor((rot / self.fixedcameraoffset_nearestangle) + 0.5) * self.fixedcameraoffset_nearestangle
+        end
+        self.inst.Transform:SetRotation(rot)
     end
 
     if self.onupdatetransform ~= nil then

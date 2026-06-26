@@ -201,7 +201,7 @@ function Tune(overrides)
         BLUEAMULET_FUEL = total_day_time * 0.75,
         BLUEGEM_COOLER = -20,
 
-        PURPLEAMULET_FUEL = total_day_time * 0.4,
+        PURPLEAMULET_FUEL = seg_time * 8,
 
         YELLOWAMULET_FUEL = total_day_time,
         YELLOWSTAFF_USES = 20,
@@ -1455,6 +1455,14 @@ function Tune(overrides)
 
             CARPENTRY_STATION_STONE = TechTree.Create({
                 CARPENTRY = 3,
+            }),
+
+            VAULT_REFINER_PEDESTAL = TechTree.Create({
+                VAULT_REFINE = 1,
+            }),
+
+            CARNIVALGAME_GOLFGAME = TechTree.Create({
+                CARNIVAL_GOLFPROPS = 1,
             }),
 		},
 
@@ -3697,6 +3705,8 @@ function Tune(overrides)
 		WINONA_STORAGE_ROBOT_POWER_LOAD_CHARGING = 0.1,
 		WINONA_STORAGE_ROBOT_LOW_FUEL_PCT = 0.02,
 
+		WINONA_WXBATTERY_COST = { fuel = total_day_time / 3 + 0.00001, shard = 1 },
+
         WINONA_BATTERY_LOW_MAX_FUEL_TIME = seg_time * 6,
         WINONA_BATTERY_LOW_FUEL_RATE_MULT = .375, --changes max fuel to last 1 full day, while still only costing 2 nitre
 		WINONA_BATTERY_LOW_SHADOW_FUEL_RATE_MULT = .1875, --changes max fuel to last 2 full days
@@ -4261,7 +4271,7 @@ function Tune(overrides)
             {
                 RANGE = 20,
                 PROJECTILE_INITIAL_HEIGHT = 1.1,
-                AIM_ANGLE_WIDTH = 90 / RADIANS, -- must be in radians
+				AIM_ANGLE_WIDTH = 90 * DEGREES, -- must be in radians
             },
 
             BOAT_MAGNET =
@@ -9403,7 +9413,6 @@ function Tune(overrides)
         WX78_SHIELDING_COOLDOWN = 20,
         WX78_SHIELDING_TOTAL_DAMAGE = 100, -- we can take 100 damage before getting knocked out the state.
         WX78_SHIELDING_MIN_TIME_COOLDOWN = 5, -- Minimum number of time we can be in the state before going off cooldown.
-        -- WX78_SHIELDING_COOLDOWN = 30,
 
 		WX78_SPIN_AOE_DIMINISHING = 0.5,
 		WX78_SPIN_EFFICIENCY_DECAY = 0.5,
@@ -9423,6 +9432,124 @@ function Tune(overrides)
 
 		CLOCKWORK_MAX_FOLLOWING = 2, --per type
 		CLOCKWORK_MAX_FOLLOWING_CHESSFRIEND = 3,
+
+        -- Rifts 7
+
+        VAULT_ORB_REFINED_DETECTION_RADIUS = 16,
+
+        PLANTMOB_BURNTIME_MULT = 4/3,
+        PLANTMOB_FIRE_DAMAGE_SCALE = 1.25,
+
+        OCEAN_AMBIENT_TEMPERATURE_PENALTY = -50,
+        OCEAN_TEMPERATURE_PENALTY_PERCENT = 1/3, -- initial temperature level(percent between min and maxtemp) when things enter ocean
+        FLOATER_HOT_SIZZLE_THRESHOLD = .25,
+
+        FUMAROLETOOL_NUMUSES = 4,
+        FUMAROLETOOL_STARTING_TEMP = 90,
+        FUMAROLETOOL_STARTING_MOISTURE_PENALTY = 60,
+        FUMAROLETOOL_MINTEMP = 0,
+        FUMAROLETOOL_MAXTEMP = 90,
+        FUMAROLETOOL_TEMP_MODIFIER = -30,
+        FUMAROLETOOL_TEMPS = { 0, 20, 40, 60 },
+        FUMAROLETOOL_LIGHTOVERRIDES = { 0, 0, .15, .35 },
+        FUMAROLETOOL_FREEZING_DAMAGE_MULTS = { 1, 1, 1.25, 2 }, -- partially frozen
+        FUMAROLETOOL_FROZEN_DAMAGE_MULTS = { 1, 1, 1.5, 3 },
+        FUMAROLETOOL_HEATING_THRESHOLD = 5,
+        FUMAROLETOOL_HEATING_MINTHRESHOLD = 2,
+
+        -- NOTES:
+        -- AXE_USES = 100,
+        -- HAMMER_USES = 75, -- 25% less than axe
+        -- SHOVEL_USES = 25, -- quarter of axe
+        -- PITCHFORK_USES = 25, -- quarter of axe
+        -- FARM_HOE_USES = 25, -- quarter of axe
+        -- PICKAXE_USES = 33, -- third of axe
+
+        FUMAROLEAXE_HEAT_ON_USE = -0.2, -- base
+        FUMAROLEPICKAXE_HEAT_ON_USE = -0.2 * 3, -- 3x more
+        FUMAROLESHOVEL_HEAT_ON_USE = -0.2 * 4, -- 4x more
+        FUMAROLEHAMMER_HEAT_ON_USE = -0.2 * (4/3), -- 1.33x more
+        FUMAROLEHOE_HEAT_ON_USE = -0.2, -- 4x more
+
+        FUMAROLEAXE_EFFECTIVENESS = { 1, 1, 1.25, 1.5 },
+        FUMAROLEPICKAXE_EFFECTIVENESS = { 1, 1, 1.25, 1.5 },
+        FUMAROLESHOVEL_EFFECTIVENESS = { 1, 1, 1.25, 1.5 }, -- We have nothing that takes more than 1 work dig, so who knows how this should be balanced :shrug:
+        FUMAROLEHAMMER_EFFECTIVENESS = { 1, 1, 1.25, 1.5 },
+        -- no effectiveness for garden hoe!
+
+        TRAP_FUMAROLE_DAMAGE = 10, -- 10 fire damage every second
+        TRAP_FUMAROLE_MINTEMP = 0,
+        TRAP_FUMAROLE_MAXTEMP = 90,
+        TRAP_FUMAROLE_MAXTEMP_HELD = 25, -- a little under the threshold so we have time to be placed before changing threshold.
+        TRAP_FUMAROLE_TEMP_MODIFIER = -30,
+        TRAP_FUMAROLE_TEMPS = { 0, 30, 60 },
+        TRAP_FUMAROLE_LIGHTOVERRIDES = { 0, .125, .35 },
+        TRAP_FUMAROLE_IGNITE_TIME = seg_time * 0.5, -- multiplied by mult below depending on temperature stage, this also cooks stuff.
+        TRAP_FUMAROLE_IGNITE_MULTS = { 0, 0.5, 1 },
+        TRAP_FUMAROLE_MAX_IGNITE_ITEMS = 2, -- max items we can cook/ignite per tile
+        TRAP_FUMAROLE_TEMPERATURE_RATE = 3,
+        TRAP_FUMAROLE_PROPAGATOR_RATE = 25,
+
+        HEALINGSALVE_FUMAROLEBUFF_DURATION = seg_time * 4,
+
+		VAULT_PILLAR_GUARD_HEALTH = 6000,
+		VAULT_PILLAR_GUARD_DAMAGE = 150,
+		VAULT_PILLAR_GUARD_ATTACK_PERIOD = 3,
+		VAULT_PILLAR_GUARD_ATTACK_RANGE = 5,
+        VAULT_PILLAR_GUARD_HIT_RECOVERY = 2,
+		VAULT_PILLAR_GUARD_SPEED = 2.85,
+		VAULT_PILLAR_GUARD_MIN_STAGGER_TIME = 6,
+		VAULT_PILLAR_GUARD_MAX_STAGGER_TIME = 15,
+		VAULT_PILLAR_GUARD_STAGGER_DAMAGE_MULT = 1.5,
+		VAULT_PILLAR_GUARD_SPIN_CD = 16,
+		VAULT_PILLAR_GUARD_QUICKJUMP_CD = 12,
+		--for crafted ones (distances from home pt)
+		VAULT_PILLAR_GUARD_COMBAT_RANGE = 20,
+		VAULT_PILLAR_GUARD_DEAGGRO_DIST = 35,
+
+		VAULT_CRAWLER_HEALTH = 1000,
+		VAULT_CRALWER_DAMAGE = 40,
+		VAULT_CRAWLER_SPEED = 3,
+		VAULT_CRAWLER_ATTACK_PERIOD = 2,
+		VAULT_CRAWLER_ATTACK_RANGE = 1.2,
+		VAULT_CRAWLER_HIT_RANGE = 1.9,
+		VAULT_CRAWLER_HIT_ARC = 120,
+		VAULT_CRAWLER_ROLLING_SPEED = 2.5,
+
+		VAULT_SHADOW_SUPPRESSION_MULT = 0.025, --dmg mult for combat btwn guards/crawlers vs shadowcreatures
+
+        MAX_SECURITY_PULSE_FOLLOWING = 4,
+
+        VAULT_PILLAR_GUARD_PIECE_GOLD_VALUE = 15,
+        VAULT_PILLAR_GUARD_PIECE_ROCK_VALUE = 18, -- appease value for antlion, 6 days
+
+        -- Crow Carnival 2026
+        CARNIVALGAME_GOLFGAME_CAMERA_FOCUS_MIN = 11,
+		CARNIVALGAME_GOLFGAME_CAMERA_FOCUS_MAX = 11,
+
+        CARNIVALGAME_GOLFGAME_ARENA_RADIUS = 8,
+        CARNIVALGAME_GOLFGAME_DURATION = seg_time * 1.5,
+
+        CARNIVALGAME_GOLF_GAME_DIFFICULTY_SCORES =
+        {
+            ["easy"] = 5,
+            ["medium"] = 10,
+            ["hard"] = 15,
+        },
+        -- go up to a 2x mult when scoring under par
+        CARNIVALGAME_GOLFGAME_SCORE_MINMULT_UNDER_PAR = 1,
+        CARNIVALGAME_GOLFGAME_SCORE_MAXMULT_UNDER_PAR = 1.75,
+        CARNIVALGAME_GOLFGAME_SCORE_MULT_HOLE_IN_ONE = 2.5, -- 2.5x minigame score for a hole in one!
+
+		GOLF_AIM_ARC = 90 * DEGREES, --radians
+		GOLF_MAX_CHARGE_TICKS = 1.5 * 30,
+		GOLF_MIN_SPEED = 0,
+		GOLF_MAX_PUTT_SPEED = 10,
+		GOLF_MAX_SWING_SPEED = 11.99, -- NOTES(JBK): Bullet physics calculates at worst case 30 times a second and the golf ball diameter is 0.4 units meaning ball velocity should be less than 30 * 0.4 = 12 to avoid ball vs triangle mesh being able to teleport inside the mesh.
+		GOLFHOLE_SCORE_RANGE_SQ = 0.05 * 0.05, --ball will fully drop in at this dist
+		GOLFHOLE_MAX_SCORE_SPEED_SQ = 0.75 * 0.75, --ball can't score if faster than this
+		GOLFHOLE_MIN_ACCEL = 0.4, --drop force toward center of hole at outer lip
+		GOLFHOLE_MAX_ACCEL = 0.7, --max drop force toward center of hole
     }
 
     TUNING_MODIFIERS = {}

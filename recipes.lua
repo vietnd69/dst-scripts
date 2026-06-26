@@ -14,9 +14,9 @@ PROTOTYPER_DEFS =
 	tacklestation				= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_fishing.tex",			is_crafting_station = false},
 	turfcraftingstation			= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_turfcrafting.tex",		is_crafting_station = false},
 	bookstation					= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_books.tex",				is_crafting_station = false,	action_str = "STUDY"},
-	
-	ancient_altar				= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_crafting_table.tex",	is_crafting_station = true,									filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.ANCIENT},
-	ancient_altar_broken		= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_crafting_table.tex",	is_crafting_station = true,									filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.ANCIENT},
+
+	ancient_altar				= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_crafting_table.tex",	is_crafting_station = true,		action_str = "USE",			filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.ANCIENT},
+	ancient_altar_broken		= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_crafting_table.tex",	is_crafting_station = true,		action_str = "USE",			filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.ANCIENT},
 	critterlab					= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_orphanage.tex",			is_crafting_station = true,		action_str = "CRITTERS",	filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.ORPHANAGE},
 	cartographydesk				= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_cartography.tex",		is_crafting_station = true,		action_str = "CARTOGRAPHY",	filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.CARTOGRAPHY},
 	sculptingtable				= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_sculpt.tex",			is_crafting_station = true,		action_str = "SCULPTING",	filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.SCULPTING},
@@ -31,8 +31,8 @@ PROTOTYPER_DEFS =
 	shellweaver					= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_shellweaver.tex",		is_crafting_station = true,		action_str = "FORGE",		filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.SHELLWEAVER},
 	rabbitking_passive			= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_rabbitking.tex",		is_crafting_station = true,		action_str = "TRADE",		filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.RABBITKINGSHOP},
 	wanderingtrader				= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_wanderingtrader.tex",	is_crafting_station = true,		action_str = "TRADE",		filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.WANDERINGTRADERSHOP},
-	wagpunk_workstation			= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_wagpunk_workstation.tex",is_crafting_station = true,								filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.WAGPUNK_WORKSTATION},
-	carpentry_station			= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_carpentry.tex",			is_crafting_station = true,									filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.CARPENTRY},
+	wagpunk_workstation			= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_wagpunk_workstation.tex",is_crafting_station = true,	action_str = "OPERATE",		filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.WAGPUNK_WORKSTATION},
+	carpentry_station			= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_carpentry.tex",			is_crafting_station = true,		action_str = "OPERATE",		filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.CARPENTRY},
 
 	waxwelljournal				= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_shadow.tex",			is_crafting_station = true,		action_str = "READ",		filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.SHADOW},
 	portableblender				= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_foodprocessing.tex",	is_crafting_station = true,		action_str = "USE",			filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.FOODPROCESSING},
@@ -43,6 +43,9 @@ PROTOTYPER_DEFS =
 	madscience_lab				= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_madscience_lab.tex",	is_crafting_station = true,		action_str = "EXPERIEMENT",	filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.MADSCIENCE},
 	perdshrine					= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_perd_offering.tex",		is_crafting_station = true,		action_str = "OFFERING",	filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.YOT_SHRINE_DOFFERING},
 
+	vault_refiner_pedestal		= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_vault_refiner.tex",		is_crafting_station = true, 	action_str = "OPERATE",		filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.VAULT_REFINER_PEDESTAL},
+	carnivalgame_golfgame 		= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_carnivalgame_golfprops.tex", is_crafting_station = true, action_str = "OPERATE", 	filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.CARNIVALGAME_GOLFGAME},
+	carnivalgame_golf_tee 		= {icon_atlas = CRAFTING_ICONS_ATLAS, icon_image = "station_carnivalgame_golfprops.tex", is_crafting_station = true, action_str = "GOLFPROPS", 	filter_text = STRINGS.UI.CRAFTING_STATION_FILTERS.CARNIVALGAME_GOLFGAME},
 }
 PROTOTYPER_DEFS.wargshrine = PROTOTYPER_DEFS.perdshrine
 PROTOTYPER_DEFS.pigshrine = PROTOTYPER_DEFS.perdshrine
@@ -71,14 +74,20 @@ local function telebase_testfn(pt, rot)
 	rot = (45 - rot) * DEGREES
 	local sin_rot = math.sin(rot)
 	local cos_rot = math.cos(rot)
+	local platform_at_pt = TheWorld.Map:GetPlatformAtPoint(pt.x, pt.z)
 	for i, v in ipairs(telebase_parts) do
-		if not TheWorld.Map:IsVisualGroundAtPoint(pt.x + v.x * cos_rot - v.z * sin_rot, pt.y, pt.z + v.z * cos_rot + v.x * sin_rot) then
+		local x, y, z = pt.x + v.x * cos_rot - v.z * sin_rot, pt.y, pt.z + v.z * cos_rot + v.x * sin_rot
+		if (not TheWorld.Map:IsPassableAtPointWithPlatformRadiusBias(x, y, z, false, false, TUNING.BOAT.NO_BUILD_BORDER_RADIUS, true))
+			or (TheWorld.Map:GetPlatformAtPoint(x, z) ~= platform_at_pt) then
 			return false
 		end
 	end
 	return true
 end
 
+local function NoBoats_testfn(pt)
+	return TheWorld.Map:GetPlatformAtPoint(pt.x, 0, pt.z, 0.5) == nil
+end
 
 -- Willow
 Recipe2("lighter",						{Ingredient("rope", 1), Ingredient("goldnugget", 1), Ingredient("petals", 3)},					TECH.NONE,				{builder_tag="pyromaniac"})
@@ -117,19 +126,21 @@ Recipe2("wurt_swampitem_shadow",		{Ingredient("driftwood_log", 1), Ingredient("t
 Recipe2("wurt_swampitem_lunar",			{Ingredient("driftwood_log", 1), Ingredient("turf_marsh", 1), Ingredient("purebrilliance", 1)},	TECH.NONE,				{builder_skill="wurt_lunar_allegiance_2"})
 
 -- Wendy
-local function elixir_numtogive(recipe, doer)
+local function elixir_numtogive(recipe, doer, ui)
 	local total = 1
 	if doer.components.skilltreeupdater and doer.components.skilltreeupdater:IsActivated("wendy_potion_yield") then
-		if TryLuckRoll(doer, TUNING.GHOSTLYELIXIR_EXTRA1_CHANCE, LuckFormulas.LootDropperChance) then
-			total = total + 1
-		end
+		if not ui then
+			if TryLuckRoll(doer, TUNING.GHOSTLYELIXIR_EXTRA1_CHANCE, LuckFormulas.LootDropperChance) then
+				total = total + 1
+			end
 
-		if TryLuckRoll(doer, TUNING.GHOSTLYELIXIR_EXTRA2_CHANCE, LuckFormulas.LootDropperChance) then
-			total = total + 1
-		end
+			if TryLuckRoll(doer, TUNING.GHOSTLYELIXIR_EXTRA2_CHANCE, LuckFormulas.LootDropperChance) then
+				total = total + 1
+			end
 
-		if total > 1 then
-			doer:PushEvent("craftedextraelixir",total)
+			if total > 1 then
+				doer:PushEvent("craftedextraelixir", total)
+			end
 		end
 	end
 	return total
@@ -562,8 +573,8 @@ Recipe2("punchingbag",						{Ingredient("cutgrass", 3), Ingredient("boards", 1)}
 Recipe2("punchingbag_lunar",				{Ingredient("cutgrass", 3), Ingredient("boards", 1), Ingredient("purebrilliance", 1)},			TECH.MAGIC_TWO,				{placer="punchingbag_lunar_placer",	min_spacing=2})
 Recipe2("punchingbag_shadow",				{Ingredient("cutgrass", 3), Ingredient("boards", 1), Ingredient("horrorfuel", 1)},				TECH.MAGIC_TWO,				{placer="punchingbag_shadow_placer",min_spacing=2})
 
-Recipe2("support_pillar_scaffold",			{Ingredient("cutstone", 1), Ingredient("boards", 2)},											TECH.LOST,					{placer="support_pillar_scaffold_placer", testfn = function(pt) return TheWorld.Map:GetPlatformAtPoint(pt.x, 0, pt.z, 0.5) == nil end})
-Recipe2("support_pillar_dreadstone_scaffold",{Ingredient("dreadstone", 4), Ingredient("boards", 2)},										TECH.LOST,					{placer="support_pillar_dreadstone_scaffold_placer", testfn = function(pt) return TheWorld.Map:GetPlatformAtPoint(pt.x, 0, pt.z, 0.5) == nil end})
+Recipe2("support_pillar_scaffold",			{Ingredient("cutstone", 1), Ingredient("boards", 2)},											TECH.LOST,					{placer="support_pillar_scaffold_placer", testfn = NoBoats_testfn})
+Recipe2("support_pillar_dreadstone_scaffold",{Ingredient("dreadstone", 4), Ingredient("boards", 2)},										TECH.LOST,					{placer="support_pillar_dreadstone_scaffold_placer", testfn = NoBoats_testfn})
 
 Recipe2("tent",								{Ingredient("silk", 6),Ingredient("twigs", 4),Ingredient("rope", 3)},									TECH.SCIENCE_TWO,			{placer="tent_placer"})
 Recipe2("siestahut",						{Ingredient("silk", 2),Ingredient("boards", 4),Ingredient("rope", 3)},									TECH.SCIENCE_TWO,			{placer="siestahut_placer"})
@@ -663,7 +674,7 @@ Recipe("chesspiece_anchor_sketch", {Ingredient("papyrus", 1)}, RECIPETABS.SEAFAR
 
 Recipe2("amulet",							{Ingredient("goldnugget", 3), Ingredient("nightmarefuel", 2),Ingredient("redgem", 1)},					TECH.MAGIC_TWO)
 Recipe2("blueamulet",						{Ingredient("goldnugget", 3), Ingredient("bluegem", 1)},												TECH.MAGIC_TWO)
-Recipe2("purpleamulet",						{Ingredient("goldnugget", 6), Ingredient("nightmarefuel", 4),Ingredient("purplegem", 2)},				TECH.MAGIC_THREE)
+Recipe2("purpleamulet",						{Ingredient("goldnugget", 6), Ingredient("nightmarefuel", 4),Ingredient("purplegem", 1)},				TECH.MAGIC_THREE)
 Recipe2("telestaff",						{Ingredient("nightmarefuel", 4), Ingredient("livinglog", 2), Ingredient("purplegem", 2)},				TECH.MAGIC_THREE)
 Recipe2("telebase",							{Ingredient("nightmarefuel", 4), Ingredient("livinglog", 4), Ingredient("goldnugget", 8)},				TECH.MAGIC_THREE,			{placer="telebase_placer", testfn=telebase_testfn})
 
@@ -816,6 +827,7 @@ Recipe2("critter_glomling_builder",			{Ingredient("glommerfuel", 1), Ingredient(
 Recipe2("critter_lunarmothling_builder",	{Ingredient("moonbutterfly", 1), Ingredient("flowersalad", 1)},											TECH.ORPHANAGE_ONE,			{nounlock=true, actionstr="ORPHANAGE"})
 Recipe2("critter_eyeofterror_builder",		{Ingredient("milkywhites", 1), Ingredient("baconeggs", 1)},												TECH.ORPHANAGE_ONE,			{nounlock=true, actionstr="ORPHANAGE"})
 Recipe2("critter_bulbin_builder",			{Ingredient("onion", 1, nil, nil, "quagmire_onion.tex"), Ingredient("stuffedeggplant", 1)},				TECH.ORPHANAGE_ONE,			{unlocks_from_skin=true, nounlock=true, actionstr="ORPHANAGE"})
+Recipe2("critter_eets_builder",				{Ingredient("garlic", 1), Ingredient("butterflymuffin", 1)},											TECH.ORPHANAGE_ONE,			{unlocks_from_skin=true, nounlock=true, actionstr="ORPHANAGE"})
 
 ----CELESTIAL----
 Recipe2("moonrockidol",								{Ingredient("moonrocknugget", 1), Ingredient("purplegem", 1)},									TECH.CELESTIAL_ONE,			{nounlock=true})
@@ -910,6 +922,7 @@ Recipe2("chesspiece_yots_builder",				{Ingredient(TECH_INGREDIENT.SCULPTING, 2),
 Recipe2("chesspiece_wagboss_robot_builder",		{Ingredient(TECH_INGREDIENT.SCULPTING, 2), Ingredient("rocks", 2)},									TECH.LOST,					{nounlock = true, actionstr="SCULPTING", image="chesspiece_wagboss_robot.tex"})
 Recipe2("chesspiece_wagboss_lunar_builder",		{Ingredient(TECH_INGREDIENT.SCULPTING, 2), Ingredient("rocks", 2)},									TECH.LOST,					{nounlock = true, actionstr="SCULPTING", image="chesspiece_wagboss_lunar.tex"})
 Recipe2("chesspiece_yoth_builder",				{Ingredient(TECH_INGREDIENT.SCULPTING, 2), Ingredient("rocks", 2)},									TECH.LOST,					{nounlock = true, actionstr="SCULPTING", image="chesspiece_yoth.tex"})
+Recipe2("chesspiece_vault_pillar_guard_builder",{Ingredient(TECH_INGREDIENT.SCULPTING, 2), Ingredient("rocks", 2)},									TECH.LOST,					{nounlock = true, actionstr="SCULPTING", image="chesspiece_vault_pillar_guard.tex"})
 
 -- Hermitcrab
 Recipe2("hermitshop_hermit_bundle_shells",				{Ingredient("messagebottleempty", 1)},														TECH.HERMITCRABSHOP_ONE,	{nounlock = true, sg_state="give", product="hermit_bundle_shells",		image="hermit_bundle.tex", actionstr="HERMITCRABSHOP"})
@@ -1029,7 +1042,7 @@ Recipe2("cutstone_bunch",								{Ingredient("rocks", 15)}, 																				
 
 Recipe2("phonograph",									{Ingredient("goldnugget", 3), Ingredient("transistor", 2), Ingredient("gears", 1)},								TECH.SCIENCE_TWO)
 Recipe2("record",										{Ingredient("batwing", 1), Ingredient("charcoal", 1)},															TECH.SCIENCE_TWO,			{image="record.tex"})
-Recipe2("w_radio",									{Ingredient("wagpunk_bits", 5), Ingredient("transistor", 2)},													TECH.LOST,
+Recipe2("w_radio",										{Ingredient("wagpunk_bits", 5), Ingredient("transistor", 2)},													TECH.LOST,
 {
     unlocks_from_skin = true,
 	layeredimagefn = function(skin_name, custom)
@@ -1054,6 +1067,20 @@ Recipe2("w_radio",									{Ingredient("wagpunk_bits", 5), Ingredient("transisto
 		return layers
 	end,
 })
+
+-- RIFTS 7
+
+Recipe2("fumaroleaxe",					{Ingredient("twigs", 4), Ingredient("mitegland", 2), Ingredient("nitre", 3)},											TECH.SCIENCE_TWO)
+Recipe2("fumarolepickaxe",				{Ingredient("twigs", 4), Ingredient("mitegland", 2), Ingredient("nitre", 3)},											TECH.SCIENCE_TWO)
+Recipe2("fumaroleshovel",				{Ingredient("twigs", 4), Ingredient("mitegland", 2), Ingredient("nitre", 3)},											TECH.SCIENCE_TWO)
+Recipe2("fumarolehammer",				{Ingredient("twigs", 4), Ingredient("mitegland", 2), Ingredient("nitre", 3)},											TECH.SCIENCE_TWO)
+Recipe2("fumarole_farm_hoe",			{Ingredient("twigs", 4), Ingredient("mitegland", 2), Ingredient("nitre", 3)},											TECH.SCIENCE_TWO)
+
+Recipe2("trap_fumarole",				{Ingredient("flint", 4), Ingredient("mitegland", 2), Ingredient("nitre", 4)},											TECH.SCIENCE_TWO, { numtogive = 4 })
+Recipe2("healingsalve_fumarole",		{Ingredient("ash", 2),   Ingredient("flint", 1), Ingredient("mitegland", 1)},											TECH.SCIENCE_TWO)
+
+Recipe2("vault_orb_refined",			{Ingredient("vault_orb", 1)},																							TECH.VAULT_REFINE_ONE, { nounlock = true, no_deconstruction = true, numtogive = 3 })
+Recipe2("vault_pillar_guard_constr_plans", {Ingredient("vault_pillar_guard_piece_1", 1), Ingredient("vault_pillar_guard_piece_2", 1), Ingredient("vault_pillar_guard_piece_3", 2)}, TECH.VAULT_REFINE_ONE, { nounlock = true })
 
 ------------------------------- SPECIAL EVENTS -------------------------------
 
@@ -1163,6 +1190,7 @@ Recipe2("carnival_vest_b",					{Ingredient("carnival_prizeticket", 48)}, 							
 Recipe2("carnival_vest_c",					{Ingredient("carnival_prizeticket", 48)}, 																TECH.CARNIVAL_PRIZESHOP_ONE,		{nounlock=true, no_deconstruction=true, actionstr="CARNIVAL_PRIZESHOP", sg_state="give"})
 Recipe2("carnivaldecor_figure_kit",			{Ingredient("carnival_prizeticket", 12)}, 																TECH.CARNIVAL_PRIZESHOP_ONE,		{nounlock=true, no_deconstruction=true, actionstr="CARNIVAL_PRIZESHOP", sg_state="give"})
 Recipe2("carnivaldecor_figure_kit_season2",	{Ingredient("carnival_prizeticket", 12)}, 																TECH.CARNIVAL_PRIZESHOP_ONE,		{nounlock=true, no_deconstruction=true, actionstr="CARNIVAL_PRIZESHOP", sg_state="give"})
+Recipe2("carnivaldecor_figure_kit_season3",	{Ingredient("carnival_prizeticket", 12)}, 																TECH.CARNIVAL_PRIZESHOP_ONE,		{nounlock=true, no_deconstruction=true, actionstr="CARNIVAL_PRIZESHOP", sg_state="give"})
 Recipe2("carnivalcannon_confetti_kit",		{Ingredient("carnival_prizeticket", 18)}, 																TECH.CARNIVAL_PRIZESHOP_ONE,		{nounlock=true, no_deconstruction=true, actionstr="CARNIVAL_PRIZESHOP", sg_state="give"})
 Recipe2("carnivalcannon_sparkle_kit",		{Ingredient("carnival_prizeticket", 18)}, 																TECH.CARNIVAL_PRIZESHOP_ONE,		{nounlock=true, no_deconstruction=true, actionstr="CARNIVAL_PRIZESHOP", sg_state="give"})
 Recipe2("carnivalcannon_streamer_kit",		{Ingredient("carnival_prizeticket", 18)}, 																TECH.CARNIVAL_PRIZESHOP_ONE,		{nounlock=true, no_deconstruction=true, actionstr="CARNIVAL_PRIZESHOP", sg_state="give"})
@@ -1172,6 +1200,8 @@ Recipe2("carnivaldecor_eggride1_kit",		{Ingredient("carnival_prizeticket", 36)},
 Recipe2("carnivaldecor_eggride2_kit",		{Ingredient("carnival_prizeticket", 36)}, 																TECH.CARNIVAL_PRIZESHOP_ONE,		{nounlock=true, no_deconstruction=true, actionstr="CARNIVAL_PRIZESHOP", sg_state="give"})
 Recipe2("carnivaldecor_eggride3_kit",		{Ingredient("carnival_prizeticket", 36)}, 																TECH.CARNIVAL_PRIZESHOP_ONE,		{nounlock=true, no_deconstruction=true, actionstr="CARNIVAL_PRIZESHOP", sg_state="give"})
 Recipe2("carnivaldecor_eggride4_kit",		{Ingredient("carnival_prizeticket", 36)}, 																TECH.CARNIVAL_PRIZESHOP_ONE,		{nounlock=true, no_deconstruction=true, actionstr="CARNIVAL_PRIZESHOP", sg_state="give"})
+Recipe2("carnivaldecor_eggride5_kit",		{Ingredient("carnival_prizeticket", 36)}, 																TECH.CARNIVAL_PRIZESHOP_ONE,		{nounlock=true, no_deconstruction=true, actionstr="CARNIVAL_PRIZESHOP", sg_state="give"})
+Recipe2("carnivaldecor_eggride6_kit",		{Ingredient("carnival_prizeticket", 36)}, 																TECH.CARNIVAL_PRIZESHOP_ONE,		{nounlock=true, no_deconstruction=true, actionstr="CARNIVAL_PRIZESHOP", sg_state="give"})
 Recipe2("carnivaldecor_lamp_kit",			{Ingredient("carnival_prizeticket", 48)}, 																TECH.CARNIVAL_PRIZESHOP_ONE,		{nounlock=true, no_deconstruction=true, actionstr="CARNIVAL_PRIZESHOP", sg_state="give"})
 
 --- summer carnival host
@@ -1185,6 +1215,202 @@ Recipe2("carnivalgame_herding_kit",			{Ingredient("goldnugget", 1), Ingredient("
 Recipe2("carnivalgame_shooting_kit",		{Ingredient("goldnugget", 1), Ingredient("seeds", 3)},													TECH.CARNIVAL_HOSTSHOP_THREE,		{nounlock=true, no_deconstruction=true, actionstr="CARNIVAL_HOSTSHOP", sg_state="give"})
 Recipe2("carnivalgame_wheelspin_kit",		{Ingredient("goldnugget", 1), Ingredient("seeds", 3)},													TECH.CARNIVAL_HOSTSHOP_THREE,		{nounlock=true, no_deconstruction=true, actionstr="CARNIVAL_HOSTSHOP", sg_state="give"})
 Recipe2("carnivalgame_puckdrop_kit",		{Ingredient("goldnugget", 1), Ingredient("seeds", 3)},													TECH.CARNIVAL_HOSTSHOP_THREE,		{nounlock=true, no_deconstruction=true, actionstr="CARNIVAL_HOSTSHOP", sg_state="give"})
+Recipe2("carnivalgame_golfgame_kit_easy",	{Ingredient("goldnugget", 1), Ingredient("seeds", 3)},													TECH.CARNIVAL_HOSTSHOP_THREE,		{nounlock=true, no_deconstruction=true, actionstr="CARNIVAL_HOSTSHOP", sg_state="give"})
+Recipe2("carnivalgame_golfgame_kit_medium",	{Ingredient("goldnugget", 1), Ingredient("seeds", 3)},													TECH.CARNIVAL_HOSTSHOP_THREE,		{nounlock=true, no_deconstruction=true, actionstr="CARNIVAL_HOSTSHOP", sg_state="give"})
+Recipe2("carnivalgame_golfgame_kit_hard",	{Ingredient("goldnugget", 1), Ingredient("seeds", 3)},													TECH.CARNIVAL_HOSTSHOP_THREE,		{nounlock=true, no_deconstruction=true, actionstr="CARNIVAL_HOSTSHOP", sg_state="give"})
+Recipe2("carnivalgame_golfgame_kit_diy",	{Ingredient("goldnugget", 1), Ingredient("seeds", 3)},													TECH.CARNIVAL_HOSTSHOP_THREE,		{nounlock=true, no_deconstruction=true, actionstr="CARNIVAL_HOSTSHOP", sg_state="give"})
+
+--- summer carnival golf props dispenser ---
+
+local function IsGolfPropWithinGolfArea(pt, rot, builder) -- builder as in inst, not inst.components.builder
+	local golfgame = builder.replica.builder ~= nil and builder.replica.builder:GetCurrentPrototyper() or nil
+	if not golfgame or golfgame.prefab ~= "carnivalgame_golfgame" then
+		return false
+	end
+
+	return golfgame:IsInGolfArea(pt.x, pt.z)
+end
+
+local GOLF_SHAPE_CONNECTOR_TAGS = { "CLASSIFIED", "golf_shape_connector" }
+local function IsValidGolfShapeConnection(pt, rot, connectpoints)
+	for _, connection in ipairs(connectpoints) do
+		local connectdir = connection.dir - rot
+		local theta = rot * DEGREES
+		local costheta = math.cos(theta)
+		local sintheta = math.sin(theta)
+		local x1 = pt.x + connection.x * costheta - connection.z * sintheta
+		local z1 = pt.z + connection.x * sintheta + connection.z * costheta
+		for _, v in ipairs(TheSim:FindEntities(x1, 0, z1, 0.1, GOLF_SHAPE_CONNECTOR_TAGS)) do
+			local connectdir1 = v.Transform:GetRotation()
+			local parent = v.entity:GetParent()
+			if parent then
+				connectdir1 = connectdir1 + parent.Transform:GetRotation()
+			end
+			local diff = DiffAngle(connectdir, connectdir1)
+			if diff >= -179 and diff <= 179 then
+				return false
+			end
+		end
+	end
+	return true
+end
+-- keep same as carnivalgame_golf_tee.lua::GOLFGAME_DEPLOY_IGNORE_TAGS and carnivalgame_golf_hole.lua::GOLFGAME_DEPLOY_IGNORE_TAGS
+local GOLFGAME_DEPLOY_IGNORE_TAGS = { "NOBLOCK", "player", "FX", "INLIMBO", "DECOR", "walkableplatform", "walkableperipheral", "isdead", "carnivalgame_part" }
+local GOLF_SHAPE_PLACEMENT_NEAREST_ANGLE = 90 -- NOTES(JBK): Keep in sync with carnivalgame_golf_shape.lua [GSPNA]
+local function IsGolfShapeAbleToBePlacedAtPoint_Generic(pt, recipe, rot, builder, data)
+    -- Normalize the angle to expected values.
+    local angle_worldspace = ReduceAngle(-rot)
+    if angle_worldspace < 0 then
+        angle_worldspace = angle_worldspace + 360
+    end
+    local angle_nearest_angle = math.floor((angle_worldspace / GOLF_SHAPE_PLACEMENT_NEAREST_ANGLE) + 0.5) * GOLF_SHAPE_PLACEMENT_NEAREST_ANGLE
+	-- Check connectpoints for placement adjacent to other shapes.
+	if not IsValidGolfShapeConnection(pt, angle_nearest_angle, data.connectpoints) then
+		return false
+	end
+    -- Check avoidpoints for placement.
+    for _, avoidpoint in ipairs(data.avoidpoints) do
+        -- Rotate the offset.
+        local offsetx, offsetz = avoidpoint[1], avoidpoint[2]
+        if angle_nearest_angle == 90 then
+            offsetx, offsetz = -offsetz, offsetx
+        elseif angle_nearest_angle == 180 then
+            offsetx, offsetz = -offsetx, -offsetz
+        elseif angle_nearest_angle == 270 then
+            offsetx, offsetz = offsetz, -offsetx
+        end
+        -- Do the actual check for clear.
+        local offsetpt = Vector3(pt.x + offsetx, pt.y, pt.z + offsetz)
+        if not TheWorld.Map:IsDeployPointClear(offsetpt, nil, recipe.min_spacing or 3.2, nil, nil, nil, GOLFGAME_DEPLOY_IGNORE_TAGS) then
+            return false
+        end
+    end
+    return true
+end
+local GOLF_SHAPE_DATA = {
+	curve1x1 = {
+		avoidpoints = {
+			{ 0, 0 },
+		},
+		connectpoints = {
+			{ x = 0.5, z = -0.5, dir = 90 },
+			{ x = -0.5, z = 0.5, dir = 180 },
+		},
+	},
+	curve1x2 = {
+		avoidpoints = {
+			{ 0, 0 },
+			{ 0, 1 },
+		},
+		connectpoints = {
+			{ x = 0.5, z = -0.5, dir = 90 },
+			{ x = -0.5, z = 1.5, dir = 180 },
+		},
+	},
+	curve2x1 = {
+		avoidpoints = {
+			{ 0, 0 },
+			{ 1, 0 },
+		},
+		connectpoints = {
+			{ x = 1.5, z = -0.5, dir = 90 },
+			{ x = -0.5, z = 0.5, dir = 180 },
+		},
+	},
+	curve2x2 = {
+		avoidpoints = {
+			-- Where it places at directly is a gap and does not need to check.
+			{ 1, 0 },
+			{ 0, 1 },
+			{ 1, 1 },
+		},
+		connectpoints = {
+			{ x = 1.5, z = -0.5, dir = 90 },
+			{ x = -0.5, z = 1.5, dir = 180 },
+		},
+	},
+	line1x1 = {
+		avoidpoints = {
+			{ 0.5, 0 },
+		},
+		connectpoints = {
+			{ x = 0.5, z = -0.5, dir = 90 },
+			{ x = 0.5, z = 0.5, dir = -90 },
+		},
+	},
+	diagonal1x1 = {
+		avoidpoints = {
+			{ 0, 0 },
+		},
+		connectpoints = {
+			{ x = 0.5, z = -0.5, dir = 90 },
+			{ x = -0.5, z = 0.5, dir = 180 },
+		},
+	},
+}
+local function IsGolfShapeAbleToBePlacedAtPoint_curve1x1(pt, recipe, rot, builder)
+	return IsGolfShapeAbleToBePlacedAtPoint_Generic(pt, recipe, rot, builder, GOLF_SHAPE_DATA.curve1x1)
+end
+local function IsGolfShapeAbleToBePlacedAtPoint_curve1x2(pt, recipe, rot, builder)
+	return IsGolfShapeAbleToBePlacedAtPoint_Generic(pt, recipe, rot, builder, GOLF_SHAPE_DATA.curve1x2)
+end
+local function IsGolfShapeAbleToBePlacedAtPoint_curve2x1(pt, recipe, rot, builder)
+	return IsGolfShapeAbleToBePlacedAtPoint_Generic(pt, recipe, rot, builder, GOLF_SHAPE_DATA.curve2x1)
+end
+local function IsGolfShapeAbleToBePlacedAtPoint_curve2x2(pt, recipe, rot, builder)
+	return IsGolfShapeAbleToBePlacedAtPoint_Generic(pt, recipe, rot, builder, GOLF_SHAPE_DATA.curve2x2)
+end
+local function IsGolfShapeAbleToBePlacedAtPoint_line1x1(pt, recipe, rot, builder)
+	return IsGolfShapeAbleToBePlacedAtPoint_Generic(pt, recipe, rot, builder, GOLF_SHAPE_DATA.line1x1)
+end
+local function IsGolfShapeAbleToBePlacedAtPoint_diagonal1x1(pt, recipe, rot, builder)
+	return IsGolfShapeAbleToBePlacedAtPoint_Generic(pt, recipe, rot, builder, GOLF_SHAPE_DATA.diagonal1x1)
+end
+local function GenericGolfCanPlace(pt, recipe, rot, builder)
+    return TheWorld.Map:IsDeployPointClear(pt, nil, recipe.min_spacing or 3.2, nil, nil, nil, GOLFGAME_DEPLOY_IGNORE_TAGS)
+end
+local cutout_smart_radii = { -- NOTES(JBK): Keep in sync with carnivalgame_golfprops.lua [CGGPCSR]
+    0.5, -- 1, carrot
+    0.5, -- 2, rose
+    0.6, -- 3, hambat
+    0.6, -- 4, corn
+    0.5, -- 5, red mushroom
+    0.6, -- 6, bearger
+    0.6, -- 7, deerclops
+    0.55, -- 8, spider
+    0.55, -- 9, dragonfly
+    0.55, -- 10, tentacle
+}
+
+
+Recipe2("carnivalgame_golf_shape_curve1x1",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = IsGolfShapeAbleToBePlacedAtPoint_curve1x1, min_spacing = 0.5, placer="carnivalgame_golf_shape_curve1x1_placer", nameoverride="carnivalgame_golf_shape", description="carnivalgame_golf_shape" })
+Recipe2("carnivalgame_golf_shape_curve1x2",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = IsGolfShapeAbleToBePlacedAtPoint_curve1x2, min_spacing = 0.5, placer="carnivalgame_golf_shape_curve1x2_placer", nameoverride="carnivalgame_golf_shape", description="carnivalgame_golf_shape" })
+Recipe2("carnivalgame_golf_shape_curve2x1",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = IsGolfShapeAbleToBePlacedAtPoint_curve2x1, min_spacing = 0.5, placer="carnivalgame_golf_shape_curve2x1_placer", nameoverride="carnivalgame_golf_shape", description="carnivalgame_golf_shape" })
+Recipe2("carnivalgame_golf_shape_curve2x2",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = IsGolfShapeAbleToBePlacedAtPoint_curve2x2, min_spacing = 0.5, placer="carnivalgame_golf_shape_curve2x2_placer", nameoverride="carnivalgame_golf_shape", description="carnivalgame_golf_shape" })
+Recipe2("carnivalgame_golf_shape_line1x1",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = IsGolfShapeAbleToBePlacedAtPoint_line1x1, min_spacing = 0.5, placer="carnivalgame_golf_shape_line1x1_placer", nameoverride="carnivalgame_golf_shape", description="carnivalgame_golf_shape" })
+Recipe2("carnivalgame_golf_shape_diagonal1x1",			{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = IsGolfShapeAbleToBePlacedAtPoint_diagonal1x1, min_spacing = 0.5, placer="carnivalgame_golf_shape_diagonal1x1_placer", nameoverride="carnivalgame_golf_shape", description="carnivalgame_golf_shape" })
+Recipe2("carnivalgame_golfprop_movingwall_red",			{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing=1, placer="carnivalgame_golfprop_movingwall_red_placer"})
+Recipe2("carnivalgame_golfprop_movingwall_blue",		{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing=1, placer="carnivalgame_golfprop_movingwall_blue_placer"})
+Recipe2("carnivalgame_golfprop_smallspinner_cw",		{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing=2, placer="carnivalgame_golfprop_smallspinner_cw_placer"})
+Recipe2("carnivalgame_golfprop_smallspinner_ccw",		{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing=2, placer="carnivalgame_golfprop_smallspinner_ccw_placer"})
+Recipe2("carnivalgame_golfprop_mediumspinner_cw",		{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing=5/3*2, placer="carnivalgame_golfprop_mediumspinner_cw_placer"})
+Recipe2("carnivalgame_golfprop_mediumspinner_ccw",		{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing=5/3*2, placer="carnivalgame_golfprop_mediumspinner_ccw_placer"})
+Recipe2("carnivalgame_golfprop_wormhole",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing=1, placer="carnivalgame_golfprop_wormhole_placer"})
+Recipe2("carnivalgame_golfprop_wormhole_limited",		{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing=1, placer="carnivalgame_golfprop_wormhole_limited_placer"})
+Recipe2("carnivalgame_golfprop_spring",					{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing=1, placer="carnivalgame_golfprop_spring_placer"})
+Recipe2("carnivalgame_golfprop_spring_onetime",			{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing=1, placer="carnivalgame_golfprop_spring_onetime_placer"})
+Recipe2("carnivalgame_golfprop_spring_nofaced",			{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing=1, placer="carnivalgame_golfprop_spring_nofaced_placer"})
+Recipe2("carnivalgame_golfprop_spring_nofaced_onetime",	{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing=1, placer="carnivalgame_golfprop_spring_nofaced_onetime_placer"})
+Recipe2("carnivalgame_golfprop_cutout1",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = cutout_smart_radii[1] * 2, placer="carnivalgame_golfprop_cutout1_placer"})
+Recipe2("carnivalgame_golfprop_cutout2",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = cutout_smart_radii[2] * 2, placer="carnivalgame_golfprop_cutout2_placer"})
+Recipe2("carnivalgame_golfprop_cutout3",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = cutout_smart_radii[3] * 2, placer="carnivalgame_golfprop_cutout3_placer"})
+Recipe2("carnivalgame_golfprop_cutout4",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = cutout_smart_radii[4] * 2, placer="carnivalgame_golfprop_cutout4_placer"})
+Recipe2("carnivalgame_golfprop_cutout5",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = cutout_smart_radii[5] * 2, placer="carnivalgame_golfprop_cutout5_placer"})
+Recipe2("carnivalgame_golfprop_cutout6",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = cutout_smart_radii[6] * 2, placer="carnivalgame_golfprop_cutout6_placer"})
+Recipe2("carnivalgame_golfprop_cutout7",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = cutout_smart_radii[7] * 2, placer="carnivalgame_golfprop_cutout7_placer"})
+Recipe2("carnivalgame_golfprop_cutout8",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = cutout_smart_radii[8] * 2, placer="carnivalgame_golfprop_cutout8_placer"})
+Recipe2("carnivalgame_golfprop_cutout9",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = cutout_smart_radii[9] * 2, placer="carnivalgame_golfprop_cutout9_placer"})
+Recipe2("carnivalgame_golfprop_cutout10",				{}, TECH.CARNIVAL_GOLFPROPS_ONE, {nounlock=true, no_deconstruction=true, always_allow_buffered_placer=true, testfn = IsGolfPropWithinGolfArea, overridecandeployrecipeatpointfn = GenericGolfCanPlace, min_spacing = cutout_smart_radii[10] * 2, placer="carnivalgame_golfprop_cutout10_placer"})
 
 -- HALLOWED_NIGHTS
 Recipe2("madscience_lab",				{Ingredient("cutstone", 2), Ingredient("transistor", 2)},																TECH.HALLOWED_NIGHTS,			{placer="madscience_lab_placer", min_spacing=2.5, hint_msg = "NEEDSHALLOWED_NIGHTS"})
@@ -1198,7 +1424,7 @@ Recipe2("halloween_experiment_root", 	{Ingredient("batwing", 1), Ingredient("liv
 
 -- WINTERSFEAST
 Recipe2("wintersfeastoven",				{Ingredient("cutstone", 1), Ingredient("marble", 1), Ingredient("log", 1)},												TECH.WINTERS_FEAST,				{placer="wintersfeastoven_placer", hint_msg = "NEEDSWINTERS_FEAST"})
-Recipe2("table_winters_feast",			{Ingredient("boards", 1), Ingredient("beefalowool", 1)},																TECH.WINTERS_FEAST,				{placer="table_winters_feast_placer", hint_msg = "NEEDSWINTERS_FEAST", min_spacing=2.8, testfn = function(pt) return TheWorld.Map:GetPlatformAtPoint(pt.x, 0, pt.z, 0.5) == nil end})
+Recipe2("table_winters_feast",			{Ingredient("boards", 1), Ingredient("beefalowool", 1)},																TECH.WINTERS_FEAST,				{placer="table_winters_feast_placer", hint_msg = "NEEDSWINTERS_FEAST", min_spacing=2.8, testfn = NoBoats_testfn})
 Recipe2("winter_treestand",				{Ingredient("poop", 2), Ingredient("boards", 1)},																		TECH.WINTERS_FEAST,				{placer="winter_treestand_placer", min_spacing=2, hint_msg = "NEEDSWINTERS_FEAST" })
 Recipe2("giftwrap",						{Ingredient("papyrus", 1), Ingredient("petals", 1)},																	TECH.WINTERS_FEAST,				{numtogive=4, hint_msg = "NEEDSWINTERS_FEAST"})
 
@@ -1321,6 +1547,10 @@ CONSTRUCTION_PLANS =
 
     -- rifts5.1
 	["wagboss_robot_constructionsite"] = { Ingredient("wagboss_robot_creation_parts", 3) },
+
+	-- rifts 7
+	["charlie_hand_keystone"] =		{ Ingredient("vault_key", 1) },
+	["vault_pillar_guard_constr"] = { Ingredient("thulecite", 8), Ingredient("moonrocknugget", 8), Ingredient("cutstone", 8) },
 }
 CONSTRUCTION_PLANS["support_pillar_scaffold"] = CONSTRUCTION_PLANS["support_pillar"]
 CONSTRUCTION_PLANS["support_pillar_dreadstone_scaffold"] = CONSTRUCTION_PLANS["support_pillar_dreadstone"]
@@ -1332,6 +1562,9 @@ CONSTRUCTION_PLANS["support_pillar_dreadstone_scaffold"] = CONSTRUCTION_PLANS["s
 DeconstructRecipe("cotl_tabernacle_level2",			{Ingredient("rocks", 10), Ingredient("cutstone", 5), Ingredient("log", 3)})
 DeconstructRecipe("cotl_tabernacle_level3",			{Ingredient("rocks", 10), Ingredient("goldnugget", 10), Ingredient("cutstone", 15), Ingredient("log", 4)})
 DeconstructRecipe("hermithotspring",				{Ingredient("rocks", 20), Ingredient("cookiecuttershell", 10), Ingredient("barnacle", 10)})
+--NOTE: "vault_pillar_guard_piece_3" ingredient listed as 2 separate x1 entries, so that you can get it back from hammering
+DeconstructRecipe("vault_pillar_guard_constr",		{Ingredient("vault_pillar_guard_piece_1", 1), Ingredient("vault_pillar_guard_piece_2", 1), Ingredient("vault_pillar_guard_piece_3", 1), Ingredient("vault_pillar_guard_piece_3", 1)}).testfn = NoBoats_testfn
+DeconstructRecipe("vault_pillar_guard_dormant",		{Ingredient("vault_pillar_guard_piece_1", 1), Ingredient("vault_pillar_guard_piece_2", 1), Ingredient("vault_pillar_guard_piece_3", 1), Ingredient("vault_pillar_guard_piece_3", 1), Ingredient("thulecite", 8), Ingredient("moonrocknugget", 8), Ingredient("cutstone", 8)})
 
 -- security_pulse_cage_full drops as security_pulse_cage when the entity is not deconstructed.
 DeconstructRecipe("security_pulse_cage_full",		{Ingredient("security_pulse_cage", 1)},		{no_deconstruction=true})
@@ -1341,10 +1574,13 @@ DeconstructRecipe("carnivaldecor_plant",			{Ingredient("carnivaldecor_plant_kit"
 DeconstructRecipe("carnivaldecor_banner",			{Ingredient("carnivaldecor_banner_kit", 1)})
 DeconstructRecipe("carnivaldecor_figure",			{Ingredient("carnivaldecor_figure_kit", 1)})
 DeconstructRecipe("carnivaldecor_figure_season2",	{Ingredient("carnivaldecor_figure_kit_season2", 1)})
+DeconstructRecipe("carnivaldecor_figure_season3",	{Ingredient("carnivaldecor_figure_kit_season3", 1)})
 DeconstructRecipe("carnivaldecor_eggride1",			{Ingredient("carnivaldecor_eggride1_kit", 1)})
 DeconstructRecipe("carnivaldecor_eggride2",			{Ingredient("carnivaldecor_eggride2_kit", 1)})
 DeconstructRecipe("carnivaldecor_eggride3",			{Ingredient("carnivaldecor_eggride3_kit", 1)})
 DeconstructRecipe("carnivaldecor_eggride4",			{Ingredient("carnivaldecor_eggride4_kit", 1)})
+DeconstructRecipe("carnivaldecor_eggride5",			{Ingredient("carnivaldecor_eggride5_kit", 1)})
+DeconstructRecipe("carnivaldecor_eggride6",			{Ingredient("carnivaldecor_eggride6_kit", 1)})
 DeconstructRecipe("carnivaldecor_lamp",				{Ingredient("carnivaldecor_lamp_kit", 1)})
 DeconstructRecipe("carnivalcannon_confetti",		{Ingredient("carnivalcannon_confetti_kit", 1)})
 DeconstructRecipe("carnivalcannon_sparkle",			{Ingredient("carnivalcannon_sparkle_kit", 1)})
@@ -1359,6 +1595,8 @@ DeconstructRecipe("carnivalgame_herding_station",	{Ingredient("carnivalgame_herd
 DeconstructRecipe("carnivalgame_shooting_station",	{Ingredient("carnivalgame_shooting_kit", 1)})
 DeconstructRecipe("carnivalgame_wheelspin_station",	{Ingredient("carnivalgame_wheelspin_kit", 1)})
 DeconstructRecipe("carnivalgame_puckdrop_station",	{Ingredient("carnivalgame_puckdrop_kit", 1)})
+DeconstructRecipe("carnivalgame_golf_tee",			{Ingredient("carnivalgame_golf_tee_kit", 1)})
+DeconstructRecipe("carnivalgame_golf_hole",			{Ingredient("carnivalgame_golf_hole_kit", 1)})
 
 -- World gen items.
 DeconstructRecipe("pighead",						{Ingredient("pigskin", 4), Ingredient("twigs", 4)})
@@ -1445,6 +1683,10 @@ DeconstructRecipe("oar_monkey",						{Ingredient("log", 1), Ingredient("palmcone
 DeconstructRecipe("eyeturret",						{Ingredient("deerclops_eyeball", 1), Ingredient("minotaurhorn", 1), Ingredient("thulecite", 5)})
 DeconstructRecipe("scrap_monoclehat",				{Ingredient("wagpunk_bits", 2), Ingredient("transistor", 1), Ingredient("trinket_6", 1)})
 DeconstructRecipe("scraphat",						{Ingredient("wagpunk_bits", 3)})
+DeconstructRecipe("vault_compass",					{Ingredient("thulecite_pieces", 1), Ingredient("moonrocknugget", 1)})
+DeconstructRecipe("vault_pillar_guard_piece_1",		{Ingredient("thulecite_pieces", 1), Ingredient("moonrocknugget", 2)})
+DeconstructRecipe("vault_pillar_guard_piece_2",		{Ingredient("thulecite_pieces", 2), Ingredient("trinket_6", 1)})
+DeconstructRecipe("vault_pillar_guard_piece_3",		{Ingredient("thulecite_pieces", 1), Ingredient("moonrocknugget", 1)})
 
 for k = 1, NUM_HALLOWEEN_PUMPKINCARVERS do
 	DeconstructRecipe("pumpkincarver"..tostring(k),	{Ingredient("pumpkin_seeds", 1), Ingredient("flint", 1)})

@@ -91,6 +91,7 @@ ITEM_DISPLAY_BLACKLIST =
 	dug_gravestone_gothic2 = true,
 	dug_gravestone_gothic3 = true,
 	dug_gravestone_gothic4 = true,
+	eets_e_basic_builder = true,
 	eyeplant_bulb_trap_plantera = true,
 	eyeturret_anitem = true,
 	fence_ancient_item = true,
@@ -101,6 +102,7 @@ ITEM_DISPLAY_BLACKLIST =
 	fence_picketbrown_item = true,
 	fence_pickettan_item = true,
 	fence_picketwhite_item = true,
+	fence_rose_item = true,
 	fence_shell_item = true,
 	fence_victorianblack_item = true,
 	fence_victorianbrass_item = true,
@@ -111,6 +113,7 @@ ITEM_DISPLAY_BLACKLIST =
 	fencegate_picketbrown_item = true,
 	fencegate_pickettan_item = true,
 	fencegate_picketwhite_item = true,
+	fencegate_rose_item = true,
 	fencegate_shell_item = true,
 	fencegate_victorianblack_item = true,
 	fencegate_victorianbrass_item = true,
@@ -167,6 +170,8 @@ ITEM_DISPLAY_BLACKLIST =
 	minerhat_cowboy = true,
 	minerhat_floppy = true,
 	minerhat_western = true,
+	minisign_cawnival_drawn = true,
+	minisign_cawnival_item = true,
 	minisign_fantasy_drawn = true,
 	minisign_fantasy_item = true,
 	minisign_ornate_drawn = true,
@@ -234,6 +239,9 @@ ITEM_DISPLAY_BLACKLIST =
 	researchlab4_hutch_costume = true,
 	researchlab4_hutch_costumep = true,
 	researchlab4_merchant = true,
+	researchlab4_minigolf_green = true,
+	researchlab4_minigolf_purple = true,
+	researchlab4_minigolf_red = true,
 	researchlab4_tophat_circus = true,
 	researchlab4_tophat_harlequin = true,
 	researchlab4_tophat_spiked = true,
@@ -310,6 +318,7 @@ ITEM_DISPLAY_BLACKLIST =
 	wall_stone_ancientitem = true,
 	wall_stone_anitem = true,
 	wall_stone_gothicitem = true,
+	wall_stone_roseitem = true,
 	wall_stone_shellitem = true,
 	wall_stone_victorianitem = true,
 	wall_wood_ornateitem = true,
@@ -385,6 +394,8 @@ HIDE_SKIN_DECORATIONS =
 	beebox_hermit_yule = true,
 	bulbin_rw_basic = true,
 	bulbin_rw_basic_builder = true,
+	eets_e_basic = true,
+	eets_e_basic_builder = true,
 	hermit_chair_rocking_yule = true,
 	hermitcrab_lightpost_yule = true,
 	hermitcrab_teashop_yule = true,
@@ -439,5 +450,21 @@ UNLOCKABLE_SKINS =
 CRAFTING_RECIPE_UNLOCKED_SKIN =
 {
 	bulbin_rw_basic = true,
+	eets_e_basic = true,
+}
+
+SKINOVERRIDES =
+{
+	idleanimations_wx78_headadjust = {
+		character = "wx78",
+		oninitfn = function(inst) if inst.components.skinner:SetItemIdleAnimation("idleanimations_wx78_headadjust") then inst.AnimState:OverrideSkinSymbol("wire", "idleanimations_wx78_headadjust", "wire") end end,
+		onclearfn = function(inst) inst.components.skinner:SetItemIdleAnimation(nil) inst.AnimState:ClearOverrideSymbol("wire") end,
+		canttags = {
+			"idleanimations",
+		},
+		tags = {
+			"idleanimations",
+		},
+	},
 }
 

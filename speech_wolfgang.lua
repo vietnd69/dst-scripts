@@ -205,6 +205,7 @@ return{
             TERRARIUM_COOLDOWN = "Wolfgang will wait for tiny tree to come back, then give present!",
             NOTAMONKEY = "Wolfgang does not speak monkey.",
             QUEENBUSY = "Hairy lady is busy. Wolfgang will wait.",
+            CARNIVALGAME_GOLFGAME_NOTREADY = "Wolfgang need to finish set up course first.",
         },
         GIVE_TACKLESKETCH =
 		{
@@ -1241,6 +1242,19 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_WX_NIGHTMARECHARGE = "only_used_by_wx78", -- WX ate/used a nightmare fuel, giving them full charge temporarily
 --fallback to speech_wilson.lua 	ANNOUNCE_WX_NIGHTMAREDISCHARGE = "only_used_by_wx78", -- WX's temporary full charge ran out.
 
+    -- Rifts 7
+
+    ANNOUNCE_MITEGLAND_DEBUFF =
+	{
+		"Wolfgang shouldn't have eaten weird bug insides!",
+		"Oooooh... Wolfgang's insides feel burny...",
+	},
+	ANNOUNCE_MITEGLAND_DEBUFF_DONE = "Ha! Could not burn through Wolfgang's stomach of steel!",
+    ANNOUNCE_GOT_DECON_MISTED = "Strange mist feels good on skin... and in head!",
+	ANNOUNCE_VAULT_SHADOW_ASSIST = "Creepy shadow things helping Wolfgang?",
+    ANNOUNCE_HEALINGSALVE_FUMAROLEBUFF_DONE = "Need more Thermal Balm!",--fire immunity expired
+    ANNOUNCE_SECURITY_PULSE_FOLLOWING = "Aw, little spark ball follow Wolfgang!", -- Security spark attached to us due to us holding Waymark Compass.
+
 	BATTLECRY =
 	{
 		GENERIC = "I will punch you!",
@@ -2177,6 +2191,7 @@ return{
         CHESSPIECE_WAGBOSS_ROBOT = "Machine guy kind of cute.",
         CHESSPIECE_WAGBOSS_LUNAR = "Wolfgang not understand what, how... and most of all, why.",
         CHESSPIECE_YOTH = "Tough little horsey.",
+        CHESSPIECE_VAULT_PILLAR_GUARD = "It is only little mighty now.",
 
         CHESSJUNK1 = "Metal junk.",
         CHESSJUNK2 = "Metal junk.",
@@ -2218,6 +2233,7 @@ return{
         CRITTER_PERDLING = "Bird baby is weak, but good.",
 		CRITTER_LUNARMOTHLING = "Strong Wolfgang will protect soft flutterby.",
         CRITTER_BULBIN = "Onions are Wolfgang's best friend! Second to potato!",
+        CRITTER_EETS = "Its legs look weak and scrawny, but jump good!",
 
 		CROW =
 		{
@@ -4766,6 +4782,7 @@ return{
 		},
 		CARNIVALDECOR_FIGURE_KIT = "What is in tiny secret box?",
 		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "What is in tiny secret box?",
+		CARNIVALDECOR_FIGURE_KIT_SEASON3 = "What is in tiny secret box?",
 
         CARNIVAL_BALL = "Reminds Wolfgang of childhood.", --unimplemented
 		CARNIVAL_SEEDPACKET = "Bird snack.",
@@ -5898,7 +5915,7 @@ return{
         },
 --fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
 		VAULT_ORB = "It is not ball for fun.",
-        VAULT_LOBBY_EXIT = "Maybe Wolfgang jump last to make sure nobody left behind.",
+        VAULT_LOBBY_EXIT = "Too dark to see bottom... maybe Wolfgang climb down with rope, just to be safe.",
 		VAULT_CHANDELIER_BROKEN = "That belong on ceiling.",
 
 		ANCIENT_HUSK = "Too much violence for Wolfgang.",
@@ -6123,6 +6140,138 @@ return{
 
         WX78_SHADOWDRONE_DEBUFFER = "Aw, tell Wolfgang secret too!",
         WX78_SHADOWDRONE_HARVESTER = "Busy little guy!",
+
+        -- Rifts 7
+        STALKER_NPC = "Wolfgang will sleep with one eye open tonight...",
+
+        MITEGLAND =
+        {
+            GENERIC = "Is hot guts of gassy bug.",
+            COLD = "Cold guts of bug.",
+        },
+        MITEGLAND_COOKED = "Little cooked guts has powerful spice smell...",
+
+        BROKEN_FUMAROLETOOLITEM = "Wolfgang will re-forge tool with bare hands! Just need heat!", -- character should comment that they could melt the pieces back together by heating it.
+        FUMAROLEAXE =
+		{
+			GENERIC = "Is cracking apart.", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "Is cooled off now.", -- The next state, its lukewarm, no cracks.
+			WARM = "Is good at keeping Wolfgang nice and warm.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "Hot axe make Wolfgang feel the burn!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLEPICKAXE =
+		{
+			GENERIC = "Is cracking apart.", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "Is cooled off now.", -- The next state, its lukewarm, no cracks.
+			WARM = "Is good at keeping Wolfgang nice and warm.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "Hot pickaxe make Wolfgang feel the burn!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLEHAMMER =
+		{
+			GENERIC = "Is cracking apart.", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "Is cooled off now.", -- The next state, its lukewarm, no cracks.
+			WARM = "Is good at keeping Wolfgang nice and warm.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "Hot hammer make Wolfgang feel the burn!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLESHOVEL =
+		{
+			GENERIC = "Is cracking apart.", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "Is cooled off now.", -- The next state, its lukewarm, no cracks.
+			WARM = "Is good at keeping Wolfgang nice and warm.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "Hot shovel make Wolfgang feel the burn!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLE_FARM_HOE =
+		{
+			GENERIC = "Is cracking apart.", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "Is cooled off now.", -- The next state, its lukewarm, no cracks.
+			WARM = "Is good at keeping Wolfgang nice and warm.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "Hot garden hoe make Wolfgang feel the burn!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        -- This trap is a cluster of rocks gets heated and deals fire damage to creatures (including players!) on top
+        TRAP_FUMAROLE =
+        {
+            HELD = "Where to put hot rock trap?", -- When held in the inventory.
+            GENERIC = "Is only cold rocks.", -- Coldest state, the trap is ineffective.
+            WARM = "Hot on the feets!", -- Warm, a bit red hot, it does some damage.
+            HOT = "Is burny floor. Very bad for walking.", -- Super hot, it's doing full fire damage.
+        },
+
+        HEALINGSALVE_FUMAROLE = "Keeps Wolfgang's skin from burning!",
+
+		VAULT_PILLAR_GUARD = "Wolfgang does not like ancient interior decorating.",
+		VAULT_PILLAR_GUARD_CRAFTED = "But is it as mighty as Wolfgang? Of course not!",
+		VAULT_PILLAR_GUARD_DORMANT = "Ancient tower looks mighty.",
+		VAULT_PILLAR_GUARD_DORMANT_CRAFTED = "It need power source to become mighty!",
+		VAULT_PILLAR_GUARD_CONSTR = "Wolfgang can't wait!",
+		VAULT_PILLAR_GUARD_CONSTR_PLANS = "Wolfgang need good spot to put.",
+		VAULT_CRAWLER =
+		{
+			GENERIC = "Rock bug needs little push!",
+			SOCKETED = "You stay there, rock bug!",
+		},
+
+        VAULT_DECON_DOOR = "Would be hard for even mighty Wolfgang to break down.",
+        VAULT_DECON_MISTER = "Chases scary shadows away. Wolfgang like!",
+		VAULT_KEY_ACTIVATOR = "Has place for putting something inside.",
+		VAULT_CRAWLER_LEVER = "Stand back! Wolfgang will pull!",
+        VAULT_KEY = "Will weird rock help bring Wolfgang home?",
+        VAULT_KEY_PEDESTAL =
+        {
+            GENERIC = "Time for Wolfgang to claim prize!", -- Keystone is on it, ready to take
+            PICKED = "Nothing there for Wolfgang.", -- No more keystone on it, we already took it, or someone else did.
+        },
+        VAULT_ORB_REFINED = "So pretty and shiny.",
+        VAULT_PILLAR_GUARD_PIECE = "This must belong to big brick guy.",
+        VAULT_REFINER_PEDESTAL = "What will Wolfgang make here?",
+
+        VAULT_COMPASS =
+        {
+            GENERIC = "Wolfgang knows the way! ...But compass helps.", -- Pointing us to the teleporters leading to the key room
+            NOTVAULT = "Is broken! How will Wolfgang know where to go?!", -- We're not in the vault, so its in an ineffective state.
+            KEYROOM = "We are here! Just like Wolfgang said!", -- We're already in the key room! Compass marker is in a success state.
+        },
+
+        CEILING_ROPE = "Wolfgang is mighty climber.",
+        VAULT_KEY_EXIT = "Nowhere for Wolfgang to tie rope!",--There's no where to tie a rope. Exit, but no re-entry.
+
+        -- Crow Carnival 2026
+
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "Is for little babies!",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "For average mini-golfer, but Wolfgang mightier than average.",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "Finally, little bit challenge for Wolfgang!",
+        CARNIVALGAME_GOLFGAME_KIT_DIY = "Wolfgang make own course!",
+
+        CARNIVALGAME_GOLF_TEE =
+        {
+            GENERIC = "No free game for Wolfgang? Need token!",  -- Ready to take a game token, reference other carnival game strings
+            PLAYING = "Paid token! Wolfgang play now!", -- The game is active and in play
+            INACTIVE = "Wolfgang need to finish set up course first.", -- The game token slot is covered, due to the course not being fully complete (e.g. hole marker isn't placed)
+        },
+        CARNIVALGAME_GOLF_HOLE = "What was that about bogey-man?",
+
+        CARNIVALGAME_GOLF_TEE_KIT = "Where Wolfgang begin?",
+        CARNIVALGAME_GOLF_HOLE_KIT = "Where Wolfgang put flaghole?",
+
+        CARNIVALGAME_GOLFCLUB = "Is puny club but Wolfgang make it work.",
+        CARNIVALGAME_GOLFBALL = "Sorry if Wolfgang swing too mighty, little ball.",
+
+        CARNIVALGAME_GOLFPROP_FENCE = "Is strong enough to keep Wolfgang ball in?",
+
+        CARNIVALGAME_GOLFPROP_SPINNER = "Make Wolfgang dizzy.", -- All 4 spin plates(size/rotation) use the same inspect
+        CARNIVALGAME_GOLFPROP_CUTOUT = "Get out of Wolfgang way!", -- All 10 prop wood cutouts use the same inspect
+        CARNIVALGAME_GOLFPROP_MOVINGWALL = "Little up and down wall is frustrating Wolfgang!", -- All colored moving walls use this space inspect
+
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "Where will it send little ball?", -- a fake wormhole, that lets the ball travel to another random wormhole
+
+        CARNIVALGAME_GOLFPROP_SPRING = "Bouncy bouncy little ball!", -- spring that pops up to launch the ball
+
+        CARNIVALGAME_GOLFPROP_FAN = "Hey, don't blow away Wolfgang ball!", -- fan that blows wind and pushes in a direction
+
     },
 
     DESCRIBE_GENERIC = "What is this thing?",

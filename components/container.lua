@@ -49,6 +49,7 @@ local Container = Class(function(self, inst)
 
 	--self.droponopen = false
     --self.restrictedtag = nil -- Only entities with this tag can interact.
+    --self.thiefproof = nil
 
     inst:ListenForEvent("player_despawn", OnOwnerDespawned)
 
@@ -57,6 +58,8 @@ local Container = Class(function(self, inst)
 
 
     --Hacky flags for altering behaviour when moving items between containers
+	self.ignorespoverflow = false
+	self.ignoreclosedspoverflow = false
     self.ignoresound = false
 	self.ignoreoverstacked = false
 end,
@@ -361,6 +364,15 @@ function Container:DestroyContentsConditionally(filterfn, onpredestroyitemcallba
     end
 end
 
+local function ValidateItemForOverflow(item, overflow)
+	if item.components.inventoryitem == nil then
+		return true --should never happen, just return true XD
+	elseif item.components.inventoryitem.canonlygoinpocket or item.components.inventoryitem.canonlygoinpocketorpocketcontainers then
+		return false
+	end
+	return true
+end
+
 -- Check how many of an item we can accept from its stack.
 function Container:CanAcceptCount(item, maxcount)
     if self.readonlycontainer then
@@ -402,6 +414,33 @@ function Container:CanAcceptCount(item, maxcount)
         end
     end
 
+	local specialized = self:GetSpecializedContainers()
+	if specialized then
+		for _, spoverflow in ipairs(specialized) do
+			if spoverflow:ShouldPrioritizeContainer(item) and ValidateItemForOverflow(item, spoverflow) then
+				for k = 1, spoverflow.numslots do
+					local v = spoverflow.slots[k]
+					if v then
+						if v.components.stackable and v.components.stackable:CanStackWith(item) then
+							acceptcount = acceptcount + v.components.stackable:RoomLeft()
+							if acceptcount >= stacksize then
+								return stacksize
+							end
+						end
+					elseif spoverflow:CanTakeItemInSlot(item, k) then
+						if spoverflow.acceptsstacks or stacksize <= 1 then
+							return stacksize
+						end
+						acceptcount = acceptcount + 1
+						if acceptcount >= stacksize then
+							return stacksize
+						end
+					end
+				end
+			end
+		end
+	end
+
     return acceptcount
 end
 
@@ -410,6 +449,35 @@ function Container:GiveItem(item, slot, src_pos, drop_on_fail)
         return false
     elseif item.components.inventoryitem ~= nil and self:CanTakeItemInSlot(item, slot) then
         slot = slot or self:GetSpecificSlotForItem(item)
+
+		if slot == nil then
+			--specialized containers
+			local specialized = self:GetSpecializedContainers()
+			if specialized then
+				for _, spoverflow in ipairs(specialized) do
+					if spoverflow:ShouldPrioritizeContainer(item) and ValidateItemForOverflow(item, spoverflow) then
+						local num = item.components.stackable and item.components.stackable:StackSize() or 1
+						local finished = spoverflow:GiveItem(item, nil, src_pos, false)
+						if finished or (item.components.stackable and item.components.stackable:StackSize() or 1) ~= num then
+							local receiveitemonopen = SpawnPrefab("container_closed_receiveitem_classified")
+							receiveitemonopen.entity:SetParent(self.inst.entity)
+							receiveitemonopen.item:set(spoverflow.inst)
+							receiveitemonopen.isclosed:set(true)
+
+							if ThePlayer and not spoverflow:IsOpenedBy(ThePlayer) and self:IsOpenedBy(ThePlayer) then
+								local owner = self.inst.components.inventoryitem and self.inst.components.inventoryitem:GetGrandOwner()
+								if owner == nil or owner.components.container then
+									spoverflow.inst:PushEvent("container_got_item_while_closed")
+								end
+							end
+						end
+						if finished then
+							return true
+						end
+					end
+				end
+			end
+		end
 
         --try to burn off stacks if we're just dumping it in there
         if item.components.stackable ~= nil and self.acceptsstacks then
@@ -716,6 +784,43 @@ function Container:ForEachItem(fn, ...)
     for k,v in pairs(self.slots) do
         fn(v, ...)
     end
+end
+
+local function ValidateSpecializedContainer(container, ignoreclosed)
+	return container ~= nil
+		and container.priorityfn ~= nil
+		and (	container:IsOpen() or
+				(	not ignoreclosed and
+					container.canbeopened and
+					not (container.droponopen or container.inst:HasTag("portablecontainer"))
+				)
+			)
+end
+
+--for specialized pocket containers (e.g. ammo pouch)
+function Container:GetSpecializedContainers()
+	if self.ignorespoverflow then
+		return
+	end
+	local ret
+	for i = 1, self.numslots do
+		local v = self.slots[i]
+		if v and ValidateSpecializedContainer(v.components.container, self.ignoreclosedspoverflow) then
+			ret = ret or {}
+			table.insert(ret, v.components.container)
+		end
+	end
+	return ret
+end
+
+function Container:IsSpecializedContainer(container)
+	for i = 1, self.numslots do
+		local v = self.slots[i]
+		if v and v.components.container == container then
+			return ValidateSpecializedContainer(container, false)
+		end
+	end
+	return false
 end
 
 function Container:Has(item, amount, iscrafting)
@@ -1267,6 +1372,11 @@ function Container:MoveItemFromAllOfSlot(slot, container, opener)
                     if container.ignoreoverflow ~= nil and container:GetOverflowContainer() == self then
                         container.ignoreoverflow = true
                     end
+					if container.ignorespoverflow ~= nil and container:IsSpecializedContainer(self) then
+						container.ignorespoverflow = true
+					elseif container.ignoreclosedspoverflow ~= nil then
+						container.ignoreclosedspoverflow = true
+					end
                     if container.ignorefull ~= nil then
                         container.ignorefull = true
                     end
@@ -1281,6 +1391,12 @@ function Container:MoveItemFromAllOfSlot(slot, container, opener)
                     if container.ignoreoverflow then
                         container.ignoreoverflow = false
                     end
+					if container.ignorespoverflow then
+						container.ignorespoverflow = false
+					end
+					if container.ignoreclosedspoverflow then
+						container.ignoreclosedspoverflow = false
+					end
                     if container.ignorefull then
                         container.ignorefull = false
                     end
@@ -1324,6 +1440,11 @@ function Container:MoveItemFromHalfOfSlot(slot, container, opener)
                 if container.ignoreoverflow ~= nil and container:GetOverflowContainer() == self then
                     container.ignoreoverflow = true
                 end
+				if container.ignorespoverflow ~= nil and container:IsSpecializedContainer(self) then
+					container.ignorespoverflow = true
+				elseif container.ignoreclosedspoverflow ~= nil then
+					container.ignoreclosedspoverflow = true
+				end
                 if container.ignorefull ~= nil then
                     container.ignorefull = true
                 end
@@ -1338,6 +1459,12 @@ function Container:MoveItemFromHalfOfSlot(slot, container, opener)
                 if container.ignoreoverflow then
                     container.ignoreoverflow = false
                 end
+				if container.ignorespoverflow then
+					container.ignorespoverflow = false
+				end
+				if container.ignoreclosedspoverflow then
+					container.ignoreclosedspoverflow = false
+				end
                 if container.ignorefull then
                     container.ignorefull = false
                 end
@@ -1388,6 +1515,11 @@ function Container:MoveItemFromCountOfSlot(slot, container, count, opener)
 					if container.ignoreoverflow ~= nil and container:GetOverflowContainer() == self then
 						container.ignoreoverflow = true
 					end
+					if container.ignorespoverflow ~= nil and container:IsSpecializedContainer(self) then
+						container.ignorespoverflow = true
+					elseif container.ignoreclosedspoverflow ~= nil then
+						container.ignoreclosedspoverflow = true
+					end
 					if container.ignorefull ~= nil then
 						container.ignorefull = true
 					end
@@ -1401,6 +1533,12 @@ function Container:MoveItemFromCountOfSlot(slot, container, count, opener)
 					--Hacks for altering normal inventory:GiveItem() behaviour
 					if container.ignoreoverflow then
 						container.ignoreoverflow = false
+					end
+					if container.ignorespoverflow then
+						container.ignorespoverflow = false
+					end
+					if container.ignoreclosedspoverflow then
+						container.ignoreclosedspoverflow = false
 					end
 					if container.ignorefull then
 						container.ignorefull = false
@@ -1504,6 +1642,10 @@ function Container:IsRestricted(target)
     return self.restrictedtag ~= nil
         and self.restrictedtag:len() > 0
         and not target:HasTag(self.restrictedtag)
+end
+
+function Container:IsThiefProof()
+    return self.thiefproof
 end
 
 return Container

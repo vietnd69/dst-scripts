@@ -271,7 +271,7 @@ function Map:IsDeployPointClear(pt, inst, min_spacing, min_spacing_sq_fn, near_o
         if v ~= inst and
             v.entity:IsVisible() and
             v.components.placer == nil and
-			v.entity:GetParent() == nil
+			(v.entity:GetParent() == nil or v:HasTag("childdeployblocker"))
 		then
 			local v_min_spacing_sq = min_spacing_sq_fn and min_spacing_sq_fn(v) or min_spacing_sq
 			if near_other_fn(v, pt, v_min_spacing_sq, (v_min_spacing_sq == min_spacing_sq and min_spacing) or nil) then
@@ -305,7 +305,7 @@ function Map:IsDeployPointClear2(pt, inst, object_size, object_size_fn, near_oth
         if v ~= inst and
             v.entity:IsVisible() and
             v.components.placer == nil and
-            v.entity:GetParent() == nil and
+            (v.entity:GetParent() == nil or v:HasTag("childdeployblocker")) and
             near_other_fn(v, pt, object_size_fn and object_size_fn(v) or object_size) then
             return false
         end
@@ -315,7 +315,7 @@ end
 
 function Map:CanDeployAtPoint(pt, inst, mouseover)
     local x,y,z = pt:Get()
-    return (mouseover == nil or mouseover:HasTag("player") or mouseover:HasTag("walkableplatform") or mouseover:HasTag("walkableperipheral"))
+    return (mouseover == nil or mouseover:HasAnyTag("player", "walkableplatform", "walkableperipheral"))
         and self:IsPassableAtPointWithPlatformRadiusBias(x,y,z, false, false, TUNING.BOAT.NO_BUILD_BORDER_RADIUS, true)
         and self:IsDeployPointClear(pt, inst, inst.replica.inventoryitem ~= nil and inst.replica.inventoryitem:DeploySpacingRadius() or DEPLOYSPACING_RADIUS[DEPLOYSPACING.DEFAULT])
 end
@@ -326,7 +326,7 @@ function Map:CanDeployPlantAtPoint(pt, inst)
 end
 
 local function IsNearOtherWallOrPlayer(other, pt, min_spacing_sq, min_spacing)
-    if other:HasTag("wall") or other:HasTag("player") then
+    if other:HasAnyTag("wall", "player") then
         local x, y, z = other.Transform:GetWorldPosition()
         return math.floor(x) == math.floor(pt.x) and math.floor(z) == math.floor(pt.z)
     end
@@ -340,6 +340,38 @@ function Map:CanDeployWallAtPoint(pt, inst)
     local x,y,z = pt:Get()
     local ispassable, is_overhang = self:IsPassableAtPointWithPlatformRadiusBias(x,y,z, false, false, TUNING.BOAT.NO_BUILD_BORDER_RADIUS, false)
     return ispassable and self:IsDeployPointClear(pt, inst, 1, nil, IsNearOtherWallOrPlayer, is_overhang)
+end
+
+local TrapFumaroleUtil = require("prefabs/trap_fumarole_util")
+local function IsFumaroleTrapNearOther(other, pt, min_spacing_sq, min_spacing)
+    --FindEntities range check is <=, but we want <
+	if min_spacing_sq <= 0 and other:HasTag("structure") then
+		--special case (e.g. minisigns use DEPLOYSPACING.NONE)
+		if other.deploy_extra_spacing then
+			min_spacing_sq = other.deploy_extra_spacing * other.deploy_extra_spacing
+		end
+	elseif other.deploy_smart_radius then
+		min_spacing = other.deploy_smart_radius + (min_spacing or math.sqrt(min_spacing_sq)) / 2
+		min_spacing_sq = min_spacing * min_spacing
+	elseif other.deploy_extra_spacing then
+		min_spacing_sq = math.max(other.deploy_extra_spacing * other.deploy_extra_spacing, min_spacing_sq)
+    elseif other.replica.inventoryitem or other:HasTag("heatstar") then
+		return false
+	end
+	return other:GetDistanceSqToPoint(pt) < min_spacing_sq
+end
+
+function Map:CanDeployFumaroleTrapAtPoint(pt, inst)
+    -- We assume that fumarole traps use placer.snap_to_half_tile, so let's emulate the snap here.
+    local tx, ty = TrapFumaroleUtil.GetTrapCoordsAtPoint(pt.x, pt.y, pt.z)
+    if TrapFumaroleUtil.HasTrap(TrapFumaroleUtil.TileCoordsToId(tx, ty)) then
+        return false
+    end
+    pt = Vector3(TrapFumaroleUtil.GetTrapCenterPoint(tx, ty))
+
+    local x,y,z = pt:Get()
+    local ispassable, is_overhang = self:IsPassableAtPointWithPlatformRadiusBias(x,y,z, false, true, TUNING.BOAT.NO_BUILD_BORDER_RADIUS, true)
+    return ispassable and self:IsDeployPointClear(pt, inst, TrapFumaroleUtil.TILE_SCALE, nil, IsFumaroleTrapNearOther, is_overhang)
 end
 
 function Map:CanDeployAtPointInWater(pt, inst, mouseover, data)
@@ -589,7 +621,7 @@ function Map:CanPlacePrefabFilteredAtPoint(x, y, z, prefab)
     return true
 end
 
-function Map:CanDeployRecipeAtPoint(pt, recipe, rot)
+function Map:CanDeployRecipeAtPoint(pt, recipe, rot, builder)
     local is_valid_ground = false;
     if BUILDMODE.WATER == recipe.build_mode then
         local pt_x, pt_y, pt_z = pt:Get()
@@ -603,8 +635,11 @@ function Map:CanDeployRecipeAtPoint(pt, recipe, rot)
     end
 
     return is_valid_ground
-        and (recipe.testfn == nil or recipe.testfn(pt, rot))
-        and self:IsDeployPointClear(pt, nil, recipe.min_spacing or 3.2)
+        and (recipe.testfn == nil or recipe.testfn(pt, rot, builder))
+        and (
+            (recipe.overridecandeployrecipeatpointfn ~= nil and recipe.overridecandeployrecipeatpointfn(pt, recipe, rot, builder)) or
+            (recipe.overridecandeployrecipeatpointfn == nil and self:IsDeployPointClear(pt, nil, recipe.min_spacing or 3.2))
+        )
 end
 
 function Map:IsSurroundedByWater(x, y, z, radius)

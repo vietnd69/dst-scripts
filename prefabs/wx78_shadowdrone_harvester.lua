@@ -128,6 +128,8 @@ local function fn()
 		fx.Follower:FollowSymbol(inst.GUID, "FOLLOW_SHADOW", 0, 0, 0, true)
 	end
 
+    inst.scrapbook_anim = "scrapbook"
+
     inst.entity:SetPristine()
 
     if not TheWorld.ismastersim then
@@ -150,7 +152,9 @@ local function fn()
 	locomotor:SetTriggersCreep(false)
 	locomotor.pathcaps = PATHCAPS
 
-    inst:AddComponent("follower")
+    local follower = inst:AddComponent("follower")
+    follower.keepdeadleader = true
+    follower.keepleaderduringminigame = true
 
     inst:AddComponent("knownlocations")
 

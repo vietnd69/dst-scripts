@@ -137,6 +137,16 @@ HARVESTABLE_PLANT_TARGET_TAGS = {
     "kelp",
 }
 
+-- FOr pure shadow stuff to target, for glass tools/weapons.
+PURE_SHADOW_TARGET_TAGS = {
+    "shadow",
+    "shadowminion",
+    "shadowchesspiece",
+    "stalker",
+    "stalkerminion",
+    "shadowthrall",
+}
+
 --------------------------------------------------------------------------
 local IGNORE_DROWNING_ONREMOVE_TAGS = {"ignorewalkableplatforms", "ignorewalkableplatformdrowning", "activeprojectile", "flying", "FX", "DECOR", "INLIMBO"}
 function TempTile_HandleTileChange_Ocean(x, y, z)
@@ -1173,6 +1183,7 @@ end
 -------
 -- Teleporting checks for restrictions.
 
+local vaultroom_defs = require("prefabs/vaultroom_defs")
 function IsTeleportingPermittedFromPointToPoint(fx, fy, fz, tx, ty, tz)
     local map = TheWorld.Map
 
@@ -1182,7 +1193,10 @@ function IsTeleportingPermittedFromPointToPoint(fx, fy, fz, tx, ty, tz)
         end
     end
 
-    if map:IsPointInAnyVault(tx, ty, tz) then
+    if map:IsPointInVaultRoom(tx, ty, tz) then
+        if map:IsPointInVaultRoom(fx, fy, fz) and vaultroom_defs.IsPathClear(fx, fy, fz, tx, ty, tz) then
+            return true
+        end
         return false
     end
 
@@ -2063,9 +2077,18 @@ end
 
 --------------------------------------------------------------------------
 -- Mimics. Search term: itemmimic:TurnEvil(
-
+local function IsItemInReadOnlyContainer(item)
+    return item ~= nil and
+        item.components.inventoryitem ~= nil and
+        item.components.inventoryitem.owner ~= nil and
+        item.components.inventoryitem.owner.components.container ~= nil and
+        item.components.inventoryitem.owner.components.container.readonlycontainer
+end
 function ShouldItemMimicBeRevealedFor(item, user)
     if item == nil then
+        return false
+    end
+    if IsItemInReadOnlyContainer(item) then
         return false
     end
 
@@ -2073,7 +2096,15 @@ function ShouldItemMimicBeRevealedFor(item, user)
     if user == nil then
         return itemisamimic
     end
-    
+
+    if user.prefab == "wx78_backupbody_inventory" then
+        -- Hack to get back to the real body for this check.
+        local parent = user.entity:GetParent()
+        if parent and parent.prefab == "wx78_backupbody" then
+            user = parent
+        end
+    end
+
     local userprocsmimics = user.components.socket_shadow_mimicry == nil
     if itemisamimic then
         -- Special cases to always force mimic reveals.
@@ -2101,4 +2132,62 @@ function GetArmorWagpunkRange(inst, owner)
     end
 
     return range
+end
+
+--------------------------------------------------------------------------
+
+function DeactivateInventoryItemBeforeLaunch(inst)
+    if inst.components.mine ~= nil then
+        inst.components.mine:Deactivate()
+        return true
+    elseif inst.inventoryitem_DeactivateBeforeLaunch then
+        inst:inventoryitem_DeactivateBeforeLaunch()
+        return true
+    end
+end
+
+--------------------------------------------------------------------------
+
+-- Setters and getters for moisture and temperature
+-- This supports the regular components and inventoryitem components
+
+function DoDeltaMoistureToEntity(inst, amount, itemmult, skipwaterproof, no_announce)
+    if inst.components.moisture ~= nil then
+        local waterproofness = skipwaterproof and 0 or inst.components.moisture:GetWaterproofness()
+        inst.components.moisture:DoDelta(amount * (1 - waterproofness), no_announce)
+        return true
+    elseif inst.components.inventoryitem ~= nil then
+        inst.components.inventoryitem:AddMoisture(amount * (itemmult or 1))
+        return true
+    end
+end
+
+function GetEntityMoisture(inst)
+    return (inst.components.moisture ~= nil and inst.components.moisture:GetMoisture())
+        or (inst.components.inventoryitem ~= nil and inst.components.inventoryitem:GetMoisture())
+        or nil
+end
+
+function DoDeltaTemperatureToEntity(inst, amount)
+    if inst.components.temperature ~= nil then
+        inst.components.temperature:DoDelta(amount)
+        return true
+    elseif inst.components.inventoryitem ~= nil then
+        inst.components.inventoryitem:AddTemperature(amount)
+        return true
+    end
+end
+
+function SetEntityTemperature(inst, newtemp)
+    if inst.components.temperature ~= nil then
+        inst.components.temperature:SetTemperature(newtemp)
+    elseif inst.components.inventoryitem ~= nil then
+        inst.components.inventoryitem:SetTemperature(newtemp)
+    end
+end
+
+function GetEntityTemperature(inst) -- Purposely defaulting to nil. Account for it.
+    return (inst.components.temperature ~= nil and inst.components.temperature:GetCurrent())
+        or (inst.components.inventoryitem ~= nil and inst.components.inventoryitem:GetTemperature())
+        or nil
 end

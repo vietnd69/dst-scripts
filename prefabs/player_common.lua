@@ -910,9 +910,13 @@ local function EnableMovementPrediction(inst, enable)
                 inst.components.locomotor.is_prediction_enabled = true
                 --This is unfortunate but it doesn't seem like you can send an rpc on the first
                 --frame when a character is spawned
-                inst:DoTaskInTime(0, function(inst)
-                    SendRPCToServer(RPC.SetMovementPredictionEnabled, true)
-                    end)
+				if inst._setpredictionrpctask then
+					inst._setpredictionrpctask:Cancel()
+				end
+				inst._setpredictionrpctask = inst:DoTaskInTime(0, function(inst)
+					inst._setpredictionrpctask = nil
+					SendRPCToServer(RPC.SetMovementPredictionEnabled, true)
+				end)
             end
         elseif inst.components.locomotor ~= nil then
             inst:RemoveEventCallback("cancelmovementprediction", OnCancelMovementPrediction)
@@ -928,9 +932,13 @@ local function EnableMovementPrediction(inst, enable)
             print("Movement prediction disabled")
             --This is unfortunate but it doesn't seem like you can send an rpc on the first
             --frame when a character is spawned
-            inst:DoTaskInTime(0, function(inst)
-                SendRPCToServer(RPC.SetMovementPredictionEnabled, false)
-                end)
+			if inst._setpredictionrpctask then
+				inst._setpredictionrpctask:Cancel()
+			end
+			inst._setpredictionrpctask = inst:DoTaskInTime(0, function(inst)
+				inst._setpredictionrpctask = nil
+				SendRPCToServer(RPC.SetMovementPredictionEnabled, false)
+			end)
         end
     end
 end
@@ -1054,6 +1062,10 @@ function fns.CommonSeamlessPlayerSwap(inst)
     inst.userid = ""
     if inst.components.playercontroller ~= nil then
         RemovePlayerComponents(inst)
+		if inst._setpredictionrpctask then
+			inst._setpredictionrpctask:Cancel()
+			inst._setpredictionrpctask = nil
+		end
     end
     inst:PushEvent("seamlessplayerswap")
 end
@@ -1096,6 +1108,15 @@ end
 
 function fns.MasterSeamlessPlayerSwapTarget(inst)
     fns.CommonSeamlessPlayerSwapTarget(inst)
+end
+
+function fns.OnPlayerReroll(inst)
+    if inst.components.socketholder then
+        local items = inst.components.socketholder:UnsocketEverything()
+        for _, item in ipairs(items) do
+            Launch2(item, inst, 1, 1, 0.2, 0, 4)
+        end
+    end
 end
 
 function fns.EnableLoadingProtection(inst)
@@ -2176,6 +2197,8 @@ local function MakePlayerCharacter(name, customprefabs, customassets, common_pos
         Asset("ANIM", "anim/player_gallop_run.zip"),
         Asset("ANIM", "anim/player_lancecharge.zip"),
         Asset("ANIM", "anim/player_lancejab.zip"),
+
+		Asset("ANIM", "anim/player_actions_golf.zip"),
     }
 
     local prefabs =
@@ -2469,6 +2492,7 @@ end
         inst:ListenForEvent("local_seamlessplayerswaptarget", fns.LocalSeamlessPlayerSwapTarget)
         inst:ListenForEvent("master_seamlessplayerswap", fns.MasterSeamlessPlayerSwap)
         inst:ListenForEvent("master_seamlessplayerswaptarget", fns.MasterSeamlessPlayerSwapTarget)
+        inst:ListenForEvent("ms_playerreroll", fns.OnPlayerReroll)
 
         inst:AddComponent("talker")
         inst.components.talker:SetOffsetFn(GetTalkerOffset)

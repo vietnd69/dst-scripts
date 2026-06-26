@@ -99,8 +99,7 @@ function Builder:OnLoad(data)
     if data.buffered_builds ~= nil then
         for k, v in pairs(AllRecipes) do
             if data.buffered_builds[k] ~= nil and IsRecipeValid(v.name) then
-                self.inst.replica.builder:SetIsBuildBuffered(v.name, true)
-                self.buffered_builds[k] = true
+                self:SetBuildBuffered(v.name, true)
             end
         end
     end
@@ -244,7 +243,7 @@ function Builder:EvaluateTechTrees()
 			and self.override_current_prototyper:HasTags(PROTOTYPER_TAGS) 
 			and not self.override_current_prototyper:HasOneOfTags(self.exclude_tags)
 			and (self.override_current_prototyper.components.prototyper.restrictedtag == nil or self.inst:HasTag(self.override_current_prototyper.components.prototyper.restrictedtag))
-			and self.inst:IsNear(self.override_current_prototyper, TUNING.RESEARCH_MACHINE_DIST)
+			and self.override_current_prototyper.components.prototyper:CanUsePrototyper(self.inst)
 			then
 
 			ents = {self.override_current_prototyper}
@@ -419,12 +418,14 @@ function Builder:EvaluateTechTrees()
 		if self.override_current_prototyper ~= self.current_prototyper then
 			self.override_current_prototyper = nil
 		elseif self.override_current_prototyper ~= old_prototyper then
-			self.inst.replica.builder:OpenCraftingMenu()
+            if not self.override_current_prototyper.components.prototyper or not self.override_current_prototyper.components.prototyper.dontopencraftingmenuonevaulatetechtrees then
+			    self.inst.replica.builder:OpenCraftingMenu()
+            end
 		end
 	end
 end
 
-function Builder:UsePrototyper(prototyper)
+function Builder:UsePrototyper(prototyper, dontopencraftingmenu)
 	if self.inst.player_classified and not self.inst.player_classified.iscraftingenabled:value() then
 		return false
 	elseif prototyper then
@@ -440,7 +441,9 @@ function Builder:UsePrototyper(prototyper)
 
 	self.override_current_prototyper = prototyper
 	if prototyper ~= nil and prototyper == self.current_prototyper then
-		self.inst.replica.builder:OpenCraftingMenu()
+        if not dontopencraftingmenu then
+		    self.inst.replica.builder:OpenCraftingMenu()
+        end
 	end
 	return true
 end
@@ -624,7 +627,7 @@ function Builder:HasTechIngredient(ingredient)
 end
 
 function Builder:MakeRecipe(recipe, pt, rot, skin, onsuccess)
-    if recipe ~= nil and not self.inst.sg:HasAnyStateTag("drowning", "falling", "floating") then -- TODO(JBK): This should be refactored to not do the state checks here.
+	if recipe and not self.inst.sg:HasAnyStateTag("drowning", "falling", "floating", "nointerrupt", "nopredict", "pausepredict") then -- TODO(JBK): This should be refactored to not do the state checks here.
         self.inst:PushEvent("makerecipe", { recipe = recipe })
         if self:IsBuildBuffered(recipe.name) or self:HasIngredients(recipe) then
             self.inst.components.locomotor:Stop()
@@ -686,8 +689,7 @@ function Builder:DoBuild(recname, pt, rotation, skin)
 
 		local is_buffered_build = self.buffered_builds[recname] ~= nil
         if is_buffered_build then
-            self.buffered_builds[recname] = nil
-            self.inst.replica.builder:SetIsBuildBuffered(recname, false)
+            self:SetBuildBuffered(recname, false)
         end
 
         if self.inst:HasTag("hungrybuilder") and not self.inst.sg:HasStateTag("slowaction") and not self.inst.sg:HasStateTag("giving") then
@@ -817,6 +819,9 @@ function Builder:DoBuild(recname, pt, rotation, skin)
                 --     have not been updated to support placement rotation yet
                 prod.Transform:SetRotation(rotation or 0)
                 self.inst:PushEvent("buildstructure", { item = prod, recipe = recipe, skin = skin })
+                if self.current_prototyper ~= nil and self.current_prototyper:IsValid() then
+                    self.current_prototyper:PushEvent("buildstructure", { item = prod, recipe = recipe, skin = skin })
+                end
                 prod:PushEvent("onbuilt", { builder = self.inst, pos = pt })
                 ProfileStatsAdd("build_"..prod.prefab)
                 NotifyPlayerProgress("TotalItemsCrafted", 1, self.inst)
@@ -991,7 +996,7 @@ local function _TryMakeIngredientRecipe(self, ing_recipe)
 	if self:KnowsRecipe(ing_recipe) then
 		canaccess = true
 		if self:HasIngredients(ing_recipe) then
-			self:MakeRecipe(ing_recipe, nil, nil, ValidateRecipeSkinRequest(self.inst.userid, ing_recipe.product, nil),
+			success = self:MakeRecipe(ing_recipe, nil, nil, ValidateRecipeSkinRequest(self.inst.userid, ing_recipe.product, nil),
 				function()
 					if usingtempbonus then
 						self:ConsumeTempTechBonuses()
@@ -1015,12 +1020,11 @@ local function _TryMakeIngredientRecipe(self, ing_recipe)
 					end
 				end
 			)
-			success = true
 		end
 	elseif canlearn and CanPrototypeRecipe(ing_recipe.level, self.accessible_tech_trees) then
 		canaccess = true
 		if self:HasIngredients(ing_recipe) then
-			self:MakeRecipe(ing_recipe, nil, nil, ValidateRecipeSkinRequest(self.inst.userid, ing_recipe.product, nil),
+			success = self:MakeRecipe(ing_recipe, nil, nil, ValidateRecipeSkinRequest(self.inst.userid, ing_recipe.product, nil),
 				function()
 					if usingtempbonus then
 						self:ConsumeTempTechBonuses()
@@ -1029,7 +1033,6 @@ local function _TryMakeIngredientRecipe(self, ing_recipe)
 					self:UnlockRecipe(ing_recipe.name)
 				end
 			)
-			success = true
 		end
 	end
 	return success, canaccess
@@ -1115,9 +1118,14 @@ function Builder:MakeRecipeAtPoint(recipe, pt, rot, skin)
     if recipe.placer ~= nil and
 		(recipe.always_allow_buffered_placer or self:KnowsRecipe(recipe)) and
         self:IsBuildBuffered(recipe.name) and
-        TheWorld.Map:CanDeployRecipeAtPoint(pt, recipe, rot) then
+        TheWorld.Map:CanDeployRecipeAtPoint(pt, recipe, rot, self.inst) then
         self:MakeRecipe(recipe, pt, rot, skin)
     end
+end
+
+function Builder:SetBuildBuffered(recname, boolval)
+    self.buffered_builds[recname] = boolval or nil
+    self.inst.replica.builder:SetIsBuildBuffered(recname, boolval or false)
 end
 
 function Builder:BufferBuild(recname)
@@ -1170,8 +1178,7 @@ function Builder:BufferBuild(recname)
 		end
 
         self:RemoveIngredients(materials, recname, discounted)
-        self.buffered_builds[recname] = true
-        self.inst.replica.builder:SetIsBuildBuffered(recname, true)
+        self:SetBuildBuffered(recname, true)
     end
 end
 

@@ -214,9 +214,18 @@ local function OnBuiltFn(inst, builder)
     inst.wx78_backupbody_inventory.AnimState:PushAnimation("wx_chassis_idle", true)
 end
 
-local function CanDoerActivate(inst, doer)
+local function activatable_CanActivate(inst, doer) -- for client
     if not doer.isplayer or doer.wx78_classified == nil then
         return false, "NOTAROBOT"
+    end
+
+    return true
+end
+
+local function CanDoerActivate(inst, doer)
+    local success, reason = activatable_CanActivate(inst, doer)
+    if not success then
+        return success, reason
     end
 
     local owneruserid = inst.components.linkeditem:GetOwnerUserID()
@@ -608,9 +617,11 @@ end
 
 local function OnSkillTreeInitializedFn(inst, owner)
     if owner.wx78_classified == nil or not owner.wx78_classified:TryToAddBackupBody(inst) then
-        local linkeditem = inst.components.linkeditem
-        if linkeditem then
-            linkeditem:LinkToOwnerUserID(nil)
+        if not table.contains(SEAMLESSSWAP_CHARACTERLIST, owner.prefab) then
+            local linkeditem = inst.components.linkeditem
+            if linkeditem then
+                linkeditem:LinkToOwnerUserID(nil)
+            end
         end
         inst:TryToDeactivateBetaCircuitStates()
         WX78Common.DeactivateSocketsIn(inst, 1)
@@ -633,15 +644,31 @@ local function OnSkillTreeInitializedFn(inst, owner)
     end
 end
 
+local function OnStartTracking(inst, owner)
+    inst._starttrackingtask = nil
+    inst.components.globaltrackingicon:StartTracking(owner)
+end
+
 local function OnOwnerInstCreatedFn(inst, owner)
-	inst.components.globaltrackingicon:StartTracking(owner)
+    if owner.wx78_classified then
+        if inst._starttrackingtask then
+            inst._starttrackingtask:Cancel()
+            inst._starttrackingtask = nil
+        end
+        -- NOTES(JBK): This task is needed in the case of a seamless player swap where the classified serialization does not go through.
+        inst._starttrackingtask = inst:DoTaskInTime(0, OnStartTracking, owner)
+    end
 end
 local function OnOwnerInstRemovedFn(inst, owner)
+    if inst._starttrackingtask then
+        inst._starttrackingtask:Cancel()
+        inst._starttrackingtask = nil
+    end
     inst.components.globaltrackingicon:StartTracking(nil, "wx78_backupbody")
 
     inst:TryToDeactivateBetaCircuitStates()
 
-    if owner and owner.wx78_classified then
+    if owner.wx78_classified then
         owner.wx78_classified:TryToRemoveBackupBody(inst)
     end
 end
@@ -864,6 +891,7 @@ local function fn()
     local linkeditem = inst:AddComponent("linkeditem")
     inst.displaynamefn = DisplayNameFn
     inst.GetActivateVerb = GetActivateVerb
+    inst.activatable_CanActivate = activatable_CanActivate
 
     inst.AttachClassified_wx78 = AttachClassified_wx78
     inst.DetachClassified_wx78 = DetachClassified_wx78

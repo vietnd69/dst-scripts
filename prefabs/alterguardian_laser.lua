@@ -147,6 +147,9 @@ local function DoDamage(inst, targets, skiptoss, skipscorch, scale, scorchscale,
 
 					--for knockback
 					local strengthmult = mult and ((v.components.inventory and v.components.inventory:ArmorHasTag("heavyarmor") or v:HasTag("heavybody")) and heavymult or mult) or nil
+					if strengthmult and v.components.rider and v.components.rider.mount then
+						targets[v.components.rider.mount] = true
+					end
 
                     if inst.caster ~= nil and inst.caster:IsValid() then
                         inst.caster.components.combat:DoAttack(v)
@@ -170,13 +173,10 @@ local function DoDamage(inst, targets, skiptoss, skipscorch, scale, scorchscale,
                                 v.components.freezable:AddColdness(-2)
                             end
                         end
-                        if v.components.temperature ~= nil then
-                            local maxtemp = math.min(v.components.temperature:GetMax(), 10)
-                            local curtemp = v.components.temperature:GetCurrent()
-                            if maxtemp > curtemp then
-                                v.components.temperature:DoDelta(math.min(10, maxtemp - curtemp))
-                            end
-                        end
+						local ent_temp = GetEntityTemperature(v)
+						if ent_temp and 10 > ent_temp then
+                        	DoDeltaTemperatureToEntity(v, 10-ent_temp)
+						end
                         if v.components.sanity ~= nil then
                             v.components.sanity:DoDelta(TUNING.GESTALT_ATTACK_DAMAGE_SANITY)
                         end
@@ -201,10 +201,9 @@ local function DoDamage(inst, targets, skiptoss, skipscorch, scale, scorchscale,
         if not skiptoss[v] then
 			local range = hitradius + v:GetPhysicsRadius(.5)
             if v:GetDistanceSqToPoint(x, y, z) < range * range then
-                if v.components.mine ~= nil then
+                if DeactivateInventoryItemBeforeLaunch(v) then
                     targets[v] = true
                     skiptoss[v] = true
-                    v.components.mine:Deactivate()
                 end
                 if not v.components.inventoryitem.nobounce and v.Physics ~= nil and v.Physics:IsActive() then
                     targets[v] = true

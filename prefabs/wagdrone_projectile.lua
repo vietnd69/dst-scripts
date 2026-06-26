@@ -141,6 +141,7 @@ end
 local function Launch(inst, x, y, z)
 	inst.Follower:StopFollowing()
 	inst.entity:SetParent(nil)
+	inst.Physics:SetActive(true)
 	inst.Physics:Teleport(x, y, z)
 	inst.Physics:SetMotorVel(0, -15, 0)
 	inst.AnimState:SetScale(1, 1)
@@ -154,6 +155,7 @@ end
 local function AttachTo(inst, parent)
 	inst.weapon = parent
 	inst.entity:SetParent(parent.entity)
+	inst.Physics:SetActive(false)
 	inst.Follower:FollowSymbol(parent.GUID, "light")
 	inst.SoundEmitter:PlaySound("rifts5/wagdrone_rolling/beamlp_a", "charging")
 end
@@ -253,6 +255,7 @@ local function wx78_drone_zap_common_postinit(inst)
 	inst:SetPrefabNameOverride("wx78_drone_zap") --for death announce
 end
 
+-- Keep in sync with wx78_possessedbodybrain::WX78_DRONE_ZAP_TARGET_NOTAGS
 local WX78_DRONE_ZAP_TARGET_TAGS = { "_combat" }
 local WX78_DRONE_ZAP_TARGET_NOTAGS_PVP = { "INLIMBO", "flight", "invisible", "notarget", "noattack", "ghost", "playerghost", "shadowthrall", "shadow", "shadowcreature", "shadowminion", "shadowchesspiece", "brightmare", "brightmareboss", "electric_connector", "wall", "companion" }
 local WX78_DRONE_ZAP_TARGET_NOTAGS = shallowcopy(WX78_DRONE_ZAP_TARGET_NOTAGS_PVP, { "player" })

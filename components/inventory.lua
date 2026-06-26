@@ -37,6 +37,8 @@ local Inventory = Class(function(self, inst)
 
     --Hacky flags for altering behaviour when moving items between containers
     self.ignoreoverflow = false
+	self.ignorespoverflow = false
+	self.ignoreclosedspoverflow = false
     self.ignorefull = false
     self.silentfull = false
     self.ignoresound = false
@@ -62,6 +64,7 @@ local Inventory = Class(function(self, inst)
 	-- self.noheavylifting = false
 	--self.ignorecombat = false
     --self.force_no_insulation = nil
+    --self.thiefproof = nil
 
     inst:ListenForEvent("player_despawn", OnOwnerDespawned)
 
@@ -256,6 +259,10 @@ function Inventory:IgnoresCanGoInContainer()
     return self.ignorescangoincontainer
 end
 
+function Inventory:IsThiefProof()
+    return self.thiefproof
+end
+
 local function CheckMigrationPets(inst, item)
     if inst.migrationpets ~= nil then
         if item.components.petleash ~= nil then
@@ -331,6 +338,7 @@ function Inventory:ReturnActiveActionItem(item, instant)
         --Hacks for altering normal inventory:GiveItem() behaviour
         self.ignorefull = true
         self.ignoreoverflow = true
+		self.ignorespoverflow = true
 
         if self:GiveItem(item) then
             self:SetActiveItem(nil)
@@ -349,6 +357,7 @@ function Inventory:ReturnActiveActionItem(item, instant)
         --Hacks for altering normal inventory:GiveItem() behaviour
         self.ignorefull = false
         self.ignoreoverflow = false
+		self.ignorespoverflow = false
     end
 end
 
@@ -789,10 +798,41 @@ function Inventory:IsFull()
     return true
 end
 
+local function ValidateItemForOverflow(item, overflow)
+	if item.components.inventoryitem == nil then
+		return true --should never happen, just return true XD
+	elseif item.components.inventoryitem.canonlygoinpocket then
+		return false
+	elseif item.components.inventoryitem.canonlygoinpocketorpocketcontainers then
+		return overflow.inst.components.inventoryitem ~= nil and overflow.inst.components.inventoryitem.canonlygoinpocket
+	end
+	return true
+end
+
 --Returns the slot, and the container where the slot is (self.itemslots, self.equipslots or self:GetOverflowContainer())
 function Inventory:GetNextAvailableSlot(item)
     local overflow = self:GetOverflowContainer()
-    local prioritize_container = overflow and overflow:ShouldPrioritizeContainer(item)
+	local prioritize_overflow = overflow ~= nil and overflow:ShouldPrioritizeContainer(item)
+	local useoverflow = overflow ~= nil and ValidateItemForOverflow(item, overflow)
+
+	--specialized containers
+	local specialized = self:GetSpecializedContainers()
+	if specialized then
+		local j = 1
+		for i = 1, #specialized do
+			local spoverflow = specialized[i]
+			specialized[i] = nil
+			if spoverflow:ShouldPrioritizeContainer(item) and
+				ValidateItemForOverflow(item, spoverflow)
+			then
+				specialized[j] = spoverflow
+				j = j + 1
+			end
+		end
+		if #specialized <= 0 then
+			specialized = nil
+		end
+	end
 
     if item.components.stackable ~= nil then
         --check for stacks that aren't full
@@ -805,7 +845,7 @@ function Inventory:GetNextAvailableSlot(item)
         local inv_slot, inv_pref
         for k, v in pairs(self.itemslots) do
             if v.components.stackable and not v.components.stackable:IsFull() and v.components.stackable:CanStackWith(item) then
-                if prioritize_container then
+				if prioritize_overflow or specialized then
                     inv_slot, inv_pref = k, self.itemslots
                     break
                 else
@@ -814,30 +854,50 @@ function Inventory:GetNextAvailableSlot(item)
             end
         end
 
-        if overflow ~= nil then
-            if item.components.inventoryitem == nil or
-            not item.components.inventoryitem.canonlygoinpocket and
-            (not item.components.inventoryitem.canonlygoinpocketorpocketcontainers or overflow.inst.components.inventoryitem and overflow.inst.components.inventoryitem.canonlygoinpocket) then
-                for k, v in pairs(overflow.slots) do
-                    if v.components.stackable and not v.components.stackable:IsFull() and v.components.stackable:CanStackWith(item) then
-                        return k, overflow
-                    end
+		if useoverflow and (prioritize_overflow or not (inv_slot and inv_pref)) then
+			for k, v in pairs(overflow.slots) do
+				if v.components.stackable and not v.components.stackable:IsFull() and v.components.stackable:CanStackWith(item) then
+					if specialized and not prioritize_overflow then
+						inv_slot, inv_pref = k, overflow
+						break
+					end
+					return k, overflow
                 end
             end
         end
 
-        if prioritize_container and inv_slot and inv_pref then
+		if specialized then
+			for _, spoverflow in ipairs(specialized) do
+				for k, v in pairs(spoverflow.slots) do
+					if v.components.stackable and not v.components.stackable:IsFull() and v.components.stackable:CanStackWith(item) then
+						return k, spoverflow
+					end
+				end
+			end
+		end
+
+		if (prioritize_overflow or specialized) and inv_slot and inv_pref then
             return inv_slot, inv_pref
         end
     end
 
-    if prioritize_container then
+	if useoverflow and prioritize_overflow then
         for k = 1, overflow:GetNumSlots() do
             if overflow:CanTakeItemInSlot(item, k) and not overflow.slots[k] then
                 return k, overflow
             end
         end
     end
+
+	if specialized then
+		for _, spoverflow in ipairs(specialized) do
+			for k = 1, spoverflow:GetNumSlots() do
+				if spoverflow:CanTakeItemInSlot(item, k) and not spoverflow.slots[k] then
+					return k, spoverflow
+				end
+			end
+		end
+	end
 
     --check for empty space in the container
     for k = 1, self.maxslots do
@@ -884,32 +944,55 @@ function Inventory:CanAcceptCount(item, maxcount)
     end
 
     local overflow = self:GetOverflowContainer()
-    if overflow ~= nil then
-        if item.components.inventoryitem == nil or
-        not item.components.inventoryitem.canonlygoinpocket and
-        (not item.components.inventoryitem.canonlygoinpocketorpocketcontainers or overflow.inst.components.inventoryitem and overflow.inst.components.inventoryitem.canonlygoinpocket) then
-            --check for empty space in our backpack
-            for k = 1, overflow.numslots do
-                local v = overflow.slots[k]
-                if v ~= nil then
-                    if v.components.stackable ~= nil and v.components.stackable:CanStackWith(item) then
-                        acceptcount = acceptcount + v.components.stackable:RoomLeft()
-                        if acceptcount >= stacksize then
-                            return stacksize
-                        end
-                    end
-                elseif overflow:CanTakeItemInSlot(item, k) then
-                    if overflow.acceptsstacks or stacksize <= 1 then
-                        return stacksize
-                    end
-                    acceptcount = acceptcount + 1
-                    if acceptcount >= stacksize then
-                        return stacksize
-                    end
+	if overflow and ValidateItemForOverflow(item, overflow) then
+		--check for empty space in our backpack
+		for k = 1, overflow.numslots do
+			local v = overflow.slots[k]
+			if v then
+				if v.components.stackable and v.components.stackable:CanStackWith(item) then
+					acceptcount = acceptcount + v.components.stackable:RoomLeft()
+					if acceptcount >= stacksize then
+						return stacksize
+					end
+				end
+			elseif overflow:CanTakeItemInSlot(item, k) then
+				if overflow.acceptsstacks or stacksize <= 1 then
+					return stacksize
+				end
+				acceptcount = acceptcount + 1
+				if acceptcount >= stacksize then
+					return stacksize
                 end
             end
         end
     end
+
+	local specialized = self:GetSpecializedContainers()
+	if specialized then
+		for _, spoverflow in ipairs(specialized) do
+			if spoverflow:ShouldPrioritizeContainer(item) and ValidateItemForOverflow(item, spoverflow) then
+				for k = 1, spoverflow:GetNumSlots() do
+					local v = spoverflow.slots[k]
+					if v then
+						if v.components.stackable and v.components.stackable:CanStackWith(item) then
+							acceptcount = acceptcount + v.components.stackable:RoomLeft()
+							if acceptcount >= stacksize then
+								return stacksize
+							end
+						end
+					elseif spoverflow:CanTakeItemInSlot(item, k) then
+						if spoverflow.acceptsstacks or stacksize <= 1 then
+							return stacksize
+						end
+						acceptcount = acceptcount + 1
+						if acceptcount >= stacksize then
+							return stacksize
+						end
+					end
+				end
+			end
+		end
+	end
 
     if item.components.stackable ~= nil then
         --check for equip stacks that aren't full
@@ -1006,6 +1089,7 @@ function Inventory:GiveItem(inst, slot, src_pos)
     end
 
     local overflow = self:GetOverflowContainer()
+	local specialized = self:GetSpecializedContainers()
     local container = self.itemslots
     if not can_use_suggested_slot then
         slot, container = self:GetNextAvailableSlot(inst)
@@ -1025,6 +1109,29 @@ function Inventory:GiveItem(inst, slot, src_pos)
                 overflow:GiveItem(inst, nil, src_pos)
                 return true
             end
+		elseif specialized and table.contains(specialized, container) then
+			local receiveitemonopen
+			if not container:IsOpenedBy(self.inst) and container.canbeopened and not (container.droponopen or container.inst:HasTag("portablestorage")) then
+				container:Open(self.inst)
+				receiveitemonopen = SpawnPrefab("container_closed_receiveitem_classified")
+				receiveitemonopen.entity:SetParent(container.inst.entity)
+				receiveitemonopen.Network:SetClassifiedTarget(self.inst)
+			end
+			local itemInSlot = container:GetItemInSlot(slot)
+			if itemInSlot then
+				leftovers = itemInSlot.components.stackable:Put(inst, src_pos)
+				if receiveitemonopen then
+					receiveitemonopen.item:set(itemInSlot)
+					receiveitemonopen.isstack:set(true)
+				end
+			else
+				container:GiveItem(inst, nil, src_pos)
+				if receiveitemonopen then
+					receiveitemonopen.item:set(inst)
+					receiveitemonopen.isstack:set(false)
+				end
+				return true
+			end
         elseif container == self.equipslots then
             if self.equipslots[slot] then
                 leftovers = self.equipslots[slot].components.stackable:Put(inst, src_pos)
@@ -1070,8 +1177,7 @@ function Inventory:GiveItem(inst, slot, src_pos)
     local shouldwisecrack = true
     if self.activeitem == nil and
         self.maxslots > 0 and
-        not inst.components.inventoryitem.canonlygoinpocket and
-        (not inst.components.inventoryitem.canonlygoinpocketorpocketcontainers or self.inst.components.inventoryitem and self.inst.components.inventoryitem.canonlygoinpocket) and
+		ValidateItemForOverflow(inst, self) and
         not (self.inst.components.playercontroller ~= nil and
             self.inst.components.playercontroller.isclientcontrollerattached) then
 
@@ -1358,6 +1464,43 @@ function Inventory:GetOverflowContainer()
     return (item ~= nil and item.components.container ~= nil and item.components.container.canbeopened)
         and item.components.container
         or nil
+end
+
+local function ValidateSpecializedContainer(self, container, ignoreclosed)
+	return container ~= nil
+		and container.priorityfn ~= nil
+		and (	container:IsOpenedBy(self.inst) or
+				(	not ignoreclosed and
+					container.canbeopened and
+					not (container.droponopen or container.inst:HasTag("portablecontainer"))
+				)
+			)
+end
+
+--for specialized pocket containers (e.g. ammo pouch)
+function Inventory:GetSpecializedContainers()
+	if self.ignorespoverflow then
+		return
+	end
+	local ret
+	for k = 1, self.maxslots do
+		local v = self.itemslots[k]
+		if v and ValidateSpecializedContainer(self, v.components.container, self.ignoreclosedspoverflow) then
+			ret = ret or {}
+			table.insert(ret, v.components.container)
+		end
+	end
+	return ret
+end
+
+function Inventory:IsSpecializedContainer(container)
+	for k = 1, self.maxslots do
+		local v = self.itemslots[k]
+		if v and v.components.container == container then
+			return ValidateSpecializedContainer(self, container, false)
+		end
+	end
+	return false
 end
 
 --Note(Peter): We don't care about v.skinname for inventory Has requests.
@@ -2390,11 +2533,27 @@ function Inventory:MoveItemFromAllOfSlot(slot, container)
                 item = self:RemoveItemBySlot(slot)
                 item.prevcontainer = nil
                 item.prevslot = nil
+
+				--Hacks for altering normal inventory:GiveItem() behaviour
+				if container.ignorespoverflow ~= nil and container:IsSpecializedContainer(self) then
+					container.ignorespoverflow = true
+				elseif container.ignoreclosedspoverflow ~= nil then
+					container.ignoreclosedspoverflow = true
+				end
+
                 if not container:GiveItem(item, targetslot, nil, false) then
                     self.ignoresound = true
                     self:GiveItem(item, slot)
                     self.ignoresound = false
                 end
+
+				--Hacks for altering normal inventory:GiveItem() behaviour
+				if container.ignorespoverflow then
+					container.ignorespoverflow = false
+				end
+				if container.ignoreclosedspoverflow then
+					container.ignoreclosedspoverflow = false
+				end
             end
 
             container.currentuser = nil
@@ -2423,11 +2582,27 @@ function Inventory:MoveItemFromHalfOfSlot(slot, container)
                 local halfstack = item.components.stackable:Get(math.floor(item.components.stackable:StackSize() / 2))
                 halfstack.prevcontainer = nil
                 halfstack.prevslot = nil
+
+				--Hacks for altering normal inventory:GiveItem() behaviour
+				if container.ignorespoverflow ~= nil and container:IsSpecializedContainer(self) then
+					container.ignorespoverflow = true
+				elseif container.ignoreclosedspoverflow ~= nil then
+					container.ignoreclosedspoverflow = true
+				end
+
                 if not container:GiveItem(halfstack, targetslot) then
                     self.ignoresound = true
                     self:GiveItem(halfstack, slot)
                     self.ignoresound = false
                 end
+
+				--Hacks for altering normal inventory:GiveItem() behaviour
+				if container.ignorespoverflow then
+					container.ignorespoverflow = false
+				end
+				if container.ignoreclosedspoverflow then
+					container.ignoreclosedspoverflow = false
+				end
             end
 
             container.currentuser = nil
@@ -2458,22 +2633,54 @@ function Inventory:MoveItemFromCountOfSlot(slot, container, count)
                     local countedstack = stackable:Get(count)
                     countedstack.prevcontainer = nil
                     countedstack.prevslot = nil
+
+					--Hacks for altering normal inventory:GiveItem() behaviour
+					if container.ignorespoverflow ~= nil and container:IsSpecializedContainer(self) then
+						container.ignorespoverflow = true
+					elseif container.ignoreclosedspoverflow ~= nil then
+						container.ignoreclosedspoverflow = true
+					end
+
                     if not container:GiveItem(countedstack, targetslot) then
                         self.ignoresound = true
                         self:GiveItem(countedstack, slot)
                         self.ignoresound = false
                     end
+
+					--Hacks for altering normal inventory:GiveItem() behaviour
+					if container.ignorespoverflow then
+						container.ignorespoverflow = false
+					end
+					if container.ignoreclosedspoverflow then
+						container.ignoreclosedspoverflow = false
+					end
 				elseif item.components.inventoryitem and item.components.inventoryitem.islockedinslot then
 					assert(BRANCH ~= "dev")
                 else
                     item = self:RemoveItemBySlot(slot)
                     item.prevcontainer = nil
                     item.prevslot = nil
+
+					--Hacks for altering normal inventory:GiveItem() behaviour
+					if container.ignorespoverflow ~= nil and container:IsSpecializedContainer(self) then
+						container.ignorespoverflow = true
+					elseif container.ignoreclosedspoverflow ~= nil then
+						container.ignoreclosedspoverflow = true
+					end
+
                     if not container:GiveItem(item, targetslot, nil, false) then
                         self.ignoresound = true
                         self:GiveItem(item, slot)
                         self.ignoresound = false
                     end
+
+					--Hacks for altering normal inventory:GiveItem() behaviour
+					if container.ignorespoverflow then
+						container.ignorespoverflow = false
+					end
+					if container.ignoreclosedspoverflow then
+						container.ignoreclosedspoverflow = false
+					end
                 end
             end
 

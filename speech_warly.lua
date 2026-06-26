@@ -205,6 +205,7 @@ return{
             TERRARIUM_COOLDOWN = "Doesn't look like it's taking, maybe I should try again later.",
             NOTAMONKEY = "Excusez-moi, I'm afraid we have a bit of a language barrier.",
             QUEENBUSY = "Pardonnez-moi, I can see you are busy.",
+            CARNIVALGAME_GOLFGAME_NOTREADY = "It's missing the key ingredient! The flaghole!",
         },
         GIVE_TACKLESKETCH =
 		{
@@ -1240,6 +1241,19 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_WX_NIGHTMARECHARGE = "only_used_by_wx78", -- WX ate/used a nightmare fuel, giving them full charge temporarily
 --fallback to speech_wilson.lua 	ANNOUNCE_WX_NIGHTMAREDISCHARGE = "only_used_by_wx78", -- WX's temporary full charge ran out.
 
+    -- Rifts 7
+
+    ANNOUNCE_MITEGLAND_DEBUFF =
+	{
+		"Whew... I'm roasting...",
+		"My stomach is burning!",
+	},
+	ANNOUNCE_MITEGLAND_DEBUFF_DONE = "I will have to be more careful about what I eat...",
+    ANNOUNCE_GOT_DECON_MISTED = "Whatever it did, my head feels much clearer now.",
+	ANNOUNCE_VAULT_SHADOW_ASSIST = "It looks like I have some shadowy sous chefs!",
+    ANNOUNCE_HEALINGSALVE_FUMAROLEBUFF_DONE = "Oh non! I am flammable once more!",--fire immunity expired
+    ANNOUNCE_SECURITY_PULSE_FOLLOWING = "Bonjour, mon ami! Are you following me?", -- Security spark attached to us due to us holding Waymark Compass.
+
 	BATTLECRY =
 	{
 		GENERIC = "I'm also an accomplished butcher!",
@@ -2176,6 +2190,7 @@ return{
         CHESSPIECE_WAGBOSS_ROBOT = "The portable version.",
         CHESSPIECE_WAGBOSS_LUNAR = "That was a bad combination.",
         CHESSPIECE_YOTH = "It was really hot and cold with this one.",
+        CHESSPIECE_VAULT_PILLAR_GUARD = "It comes in petit!",
 
         CHESSJUNK1 = "Broken chess pieces?",
         CHESSJUNK2 = "More broken chess pieces?",
@@ -2217,6 +2232,7 @@ return{
         CRITTER_PERDLING = "I would never eat you.",
 		CRITTER_LUNARMOTHLING = "The light of my life!",
         CRITTER_BULBIN = "It never hurts to have a little onion on hand.",
+        CRITTER_EETS = "Mon ami, won't you try my cakes?",
 
 		CROW =
 		{
@@ -4765,6 +4781,7 @@ return{
 		},
 		CARNIVALDECOR_FIGURE_KIT = "I wonder what could be inside?",
 		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "I wonder what could be inside?",
+		CARNIVALDECOR_FIGURE_KIT_SEASON3 = "I wonder what could be inside?",
 
         CARNIVAL_BALL = "Perhaps I'll toss it around with the children.", --unimplemented
 		CARNIVAL_SEEDPACKET = "They could use a bit of seasoning.",
@@ -5897,7 +5914,7 @@ return{
         },
 --fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
 		VAULT_ORB = "Is it a part of something?",
-        VAULT_LOBBY_EXIT = "Oh dear, are we meant to jump?",
+        VAULT_LOBBY_EXIT = "A rope would make my descent slightly less nerve-wracking, non?",
 		VAULT_CHANDELIER_BROKEN = "Lucky I was not standing under when it fell!",
 
 		ANCIENT_HUSK = "Terrible!",
@@ -6122,6 +6139,138 @@ return{
 
         WX78_SHADOWDRONE_DEBUFFER = "What do you see, mon ami?",
         WX78_SHADOWDRONE_HARVESTER = "Have a happy harvest!",
+
+        -- Rifts 7
+        STALKER_NPC = "He seems to have had a change of heart.",
+
+        MITEGLAND =
+        {
+            GENERIC = "I almost need oven mitts to hold it.",
+            COLD = "Ah. I let it get cold.",
+        },
+        MITEGLAND_COOKED = "It certainly has an intriguing aroma...",
+
+        BROKEN_FUMAROLETOOLITEM = "Back into the oven it goes!", -- character should comment that they could melt the pieces back together by heating it.
+        FUMAROLEAXE =
+		{
+			GENERIC = "It's beginning to crumble.", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "It's getting cold.", -- The next state, its lukewarm, no cracks.
+			WARM = "It keeps my hands pleasantly warm.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "It cuts through trees like a hot knife through butter!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLEPICKAXE =
+		{
+			GENERIC = "It's beginning to crumble.", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "It's getting cold.", -- The next state, its lukewarm, no cracks.
+			WARM = "It keeps my hands pleasantly warm.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "It cuts through stone like a hot knife through butter!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLEHAMMER =
+		{
+			GENERIC = "It's beginning to crumble.", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "It's getting cold.", -- The next state, its lukewarm, no cracks.
+			WARM = "It keeps my hands pleasantly warm.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "It's a hammer, served hot!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLESHOVEL =
+		{
+			GENERIC = "It's beginning to crumble.", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "It's getting cold.", -- The next state, its lukewarm, no cracks.
+			WARM = "It keeps my hands pleasantly warm.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "It cuts through dirt like a hot knife through butter!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLE_FARM_HOE =
+		{
+			GENERIC = "It's beginning to crumble.", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "It's getting cold.", -- The next state, its lukewarm, no cracks.
+			WARM = "It keeps my hands pleasantly warm.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "It's a garden hoe, served hot!", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        -- This trap is a cluster of rocks gets heated and deals fire damage to creatures (including players!) on top
+        TRAP_FUMAROLE =
+        {
+            HELD = "I'm cooking up a plan...", -- When held in the inventory.
+            GENERIC = "It's cooled off.", -- Coldest state, the trap is ineffective.
+            WARM = "It's been reduced to medium-low.", -- Warm, a bit red hot, it does some damage.
+            HOT = "My pursuers will be well roasted.", -- Super hot, it's doing full fire damage.
+        },
+
+        HEALINGSALVE_FUMAROLE = "A heat-repelling glaze.",
+
+		VAULT_PILLAR_GUARD = "How do I keep getting mixed up in these things...",
+		VAULT_PILLAR_GUARD_CRAFTED = "Keep out the unruly customers!",
+		VAULT_PILLAR_GUARD_DORMANT = "That is a bold design.",
+		VAULT_PILLAR_GUARD_DORMANT_CRAFTED = "This appliance needs a power source.",
+		VAULT_PILLAR_GUARD_CONSTR = "What are the missing ingredients?",
+		VAULT_PILLAR_GUARD_CONSTR_PLANS = "Important ingredients for the big tower!",
+		VAULT_CRAWLER =
+		{
+			GENERIC = "It seems we have company.",
+			SOCKETED = "That guest has been seated!",
+		},
+
+        VAULT_DECON_DOOR = "It seems they were very particular about who was invited in.",
+        VAULT_DECON_MISTER = "I suppose the way it works has been lost to time.",
+		VAULT_KEY_ACTIVATOR = "There is an important ingredient missing.",
+		VAULT_CRAWLER_LEVER = "I wonder what might happen if I pull that lever?",
+        VAULT_KEY = "What secrets might it unlock?",
+        VAULT_KEY_PEDESTAL =
+        {
+            GENERIC = "An ominous centerpiece!", -- Keystone is on it, ready to take
+            PICKED = "It has been taken!", -- No more keystone on it, we already took it, or someone else did.
+        },
+        VAULT_ORB_REFINED = "Voila! Beautiful!",
+        VAULT_PILLAR_GUARD_PIECE = "Ah yes, an ingredient for the tower!",
+        VAULT_REFINER_PEDESTAL = "It looks like a fancy mixer.",
+
+        VAULT_COMPASS =
+        {
+            GENERIC = "I love it when there are directions!", -- Pointing us to the teleporters leading to the key room
+            NOTVAULT = "It is of no use to me here.", -- We're not in the vault, so its in an ineffective state.
+            KEYROOM = "Voilà! Here we are!", -- We're already in the key room! Compass marker is in a success state.
+        },
+
+        CEILING_ROPE = "If you can't take the heat, climb the rope!",
+        VAULT_KEY_EXIT = "I cannot climb back up!",--There's no where to tie a rope. Exit, but no re-entry.
+
+        -- Crow Carnival 2026
+
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "This course is but an appetizer.",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "Medium! Just the way I like it!",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "Now we are spicing things up!",
+        CARNIVALGAME_GOLFGAME_KIT_DIY = "If I don't arrange it the same as before, will the outcome be different?",
+
+        CARNIVALGAME_GOLF_TEE =
+        {
+            GENERIC = "All I need now is a token.",  -- Ready to take a game token, reference other carnival game strings
+            PLAYING = "The game has already begun!", -- The game is active and in play
+            INACTIVE = "It's missing the key ingredient! The flaghole!", -- The game token slot is covered, due to the course not being fully complete (e.g. hole marker isn't placed)
+        },
+        CARNIVALGAME_GOLF_HOLE = "The ball is delivered here!",
+
+        CARNIVALGAME_GOLF_TEE_KIT = "Where should we begin?",
+        CARNIVALGAME_GOLF_HOLE_KIT = "Where shall we end?",
+
+        CARNIVALGAME_GOLFCLUB = "A gentle instrument!",
+        CARNIVALGAME_GOLFBALL = "Look at those cute little dimples!",
+
+        CARNIVALGAME_GOLFPROP_FENCE = "Simple, it holds the course together.",
+
+        CARNIVALGAME_GOLFPROP_SPINNER = "It would make a real mess of dinner!", -- All 4 spin plates(size/rotation) use the same inspect
+        CARNIVALGAME_GOLFPROP_CUTOUT = "Aren't you quite the unwelcome guest!", -- All 10 prop wood cutouts use the same inspect
+        CARNIVALGAME_GOLFPROP_MOVINGWALL = "Like a nightmare soufflé.", -- All colored moving walls use this space inspect
+
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "It has fast digestion.", -- a fake wormhole, that lets the ball travel to another random wormhole
+
+        CARNIVALGAME_GOLFPROP_SPRING = "I wonder if it can flip crepes.", -- spring that pops up to launch the ball
+
+        CARNIVALGAME_GOLFPROP_FAN = "The wind is an unwelcome guest!", -- fan that blows wind and pushes in a direction
+
     },
 
     DESCRIBE_GENERIC = "It is what it is...",

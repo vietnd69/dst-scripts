@@ -205,6 +205,7 @@ return{
             TERRARIUM_COOLDOWN = "Oh that won't do, the intended arborous recipient appears to be missing.",
             NOTAMONKEY = "I believe they're trying to communicate.",
             QUEENBUSY = "She is occupied with other matters at the moment.",
+            CARNIVALGAME_GOLFGAME_NOTREADY = "The mini-golf course requires at least a flaghole to be playable.",
         },
         GIVE_TACKLESKETCH =
 		{
@@ -1240,6 +1241,19 @@ return{
 --fallback to speech_wilson.lua     ANNOUNCE_WX_NIGHTMARECHARGE = "only_used_by_wx78", -- WX ate/used a nightmare fuel, giving them full charge temporarily
 --fallback to speech_wilson.lua 	ANNOUNCE_WX_NIGHTMAREDISCHARGE = "only_used_by_wx78", -- WX's temporary full charge ran out.
 
+    -- Rifts 7
+
+    ANNOUNCE_MITEGLAND_DEBUFF =
+	{
+		"Oh dear... that gland is really disagreeing with me...",
+		"It appears that gland was not safe for consumption after all.",
+	},
+	ANNOUNCE_MITEGLAND_DEBUFF_DONE = "That was a lesson painfully learned.",
+    ANNOUNCE_GOT_DECON_MISTED = "Ah... my mind feels clearer, somehow.",
+	ANNOUNCE_VAULT_SHADOW_ASSIST = "It would seem we are aligned with the shadowy beasts against a common foe.",
+    ANNOUNCE_HEALINGSALVE_FUMAROLEBUFF_DONE = "It would seem I am vulnerable to the flames once more.",--fire immunity expired
+    ANNOUNCE_SECURITY_PULSE_FOLLOWING = "It is attracted to this device.", -- Security spark attached to us due to us holding Waymark Compass.
+
 	BATTLECRY =
 	{
 		GENERIC = "Combat!",
@@ -2176,6 +2190,7 @@ return{
         CHESSPIECE_WAGBOSS_ROBOT = "A miniature of the homicidal automaton. Hm.",
         CHESSPIECE_WAGBOSS_LUNAR = "This dreadful amalgamation was unprecedented.",
         CHESSPIECE_YOTH = "This mechanical knight demonstrates loyalty to whomever dons the garb of its charge.",
+        CHESSPIECE_VAULT_PILLAR_GUARD = "It proved a marvel of ancient architecture.",
 
         CHESSJUNK1 = "The magician's unfinished projects?",
         CHESSJUNK2 = "The magician's unfinished projects?",
@@ -2217,6 +2232,7 @@ return{
         CRITTER_PERDLING = "What a handsome poult you are!",
 		CRITTER_LUNARMOTHLING = "Who wuvs their widdle specimen?",
         CRITTER_BULBIN = "Are you animal or vegetable, dear?",
+        CRITTER_EETS = "It seems to have a liking for confectionary treats such as cakes.",
 
 		CROW =
 		{
@@ -4765,6 +4781,7 @@ return{
 		},
 		CARNIVALDECOR_FIGURE_KIT = "How intriguing! I wonder what's inside?",
 		CARNIVALDECOR_FIGURE_KIT_SEASON2 = "How intriguing! I wonder what's inside?",
+		CARNIVALDECOR_FIGURE_KIT_SEASON3 = "How intriguing! I wonder what's inside?",
 
         CARNIVAL_BALL = "I don't want to see anyone playing with this near any breakables.", --unimplemented
 		CARNIVAL_SEEDPACKET = "A bit of extra fiber added to one's diet never hurts.",
@@ -5897,7 +5914,7 @@ return{
         },
 --fallback to speech_wilson.lua 		VAULT_TELEPORTER_UNDERCONSTRUCTION = "\"This Waymark is under development for a future update.\"",
 		VAULT_ORB = "This orb constitutes an essential component of a particle transfer apparatus.",
-        VAULT_LOBBY_EXIT = "This must indeed be the point of egress from these chambers.",
+        VAULT_LOBBY_EXIT = "Utilizing a rope for my descent might be prudent.",
 		VAULT_CHANDELIER_BROKEN = "It would appear substandard workmanship has permitted this chandelier to fall from its mounting.",
 
 		ANCIENT_HUSK = "It's obvious which of these ancients was the perpetrator.",
@@ -6076,8 +6093,8 @@ return{
 		-- Meta 6
 
 		WX78_DRONE_SCOUT = "We are indebted to this intrepid little scout.",
-		WX78_DRONE_DELIVERY = "The automaton deomonstrates an unusual attachment to its belongings.",
-		WX78_DRONE_ZAP = "It permits the automaton to engage its foes from a distance.",
+		WX78_DRONE_DELIVERY = "The automaton demonstrates an unusual attachment to their belongings.",
+		WX78_DRONE_ZAP = "It permits the automaton to engage their foes from a distance.",
 		WX78_DRONE_ZAP_REMOTE =
 		{
 			GENERIC = "Through signal transmission, the automaton may maneuver the aerial device and discharge electrical shocks.",
@@ -6122,6 +6139,138 @@ return{
 
         WX78_SHADOWDRONE_DEBUFFER = "It studies enemies, calibrating WX's attack parameters.",
         WX78_SHADOWDRONE_HARVESTER = "It is a rather industrious little gatherer.",
+
+        -- Rifts 7
+        STALKER_NPC = "Have you nothing to say for yourself?",
+
+        MITEGLAND =
+        {
+            GENERIC = "It gives off a substantial amount of heat.",
+            COLD = "It seems that its reserves of heat are finite.",
+        },
+        MITEGLAND_COOKED = "I suspect it may not be wise to eat such a thing.",
+
+        BROKEN_FUMAROLETOOLITEM = "A sufficient amount of heat should be enough to reconstitute it.", -- character should comment that they could melt the pieces back together by heating it.
+        FUMAROLEAXE =
+		{
+			GENERIC = "It may require repairs soon.", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "Its temperature has diminished significantly.", -- The next state, its lukewarm, no cracks.
+			WARM = "It keeps its user comfortably warm while working.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "It helps perform tasks quickly, if one can withstand the heat.", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLEPICKAXE =
+		{
+			GENERIC = "It may require repairs soon.", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "Its temperature has diminished significantly.", -- The next state, its lukewarm, no cracks.
+			WARM = "It keeps its user comfortably warm while working.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "It helps perform tasks quickly, if one can withstand the heat.", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLEHAMMER =
+		{
+			GENERIC = "It may require repairs soon.", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "Its temperature has diminished significantly.", -- The next state, its lukewarm, no cracks.
+			WARM = "It keeps its user comfortably warm while working.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "It helps perform tasks quickly, if one can withstand the heat.", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLESHOVEL =
+		{
+			GENERIC = "It may require repairs soon.", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "Its temperature has diminished significantly.", -- The next state, its lukewarm, no cracks.
+			WARM = "It keeps its user comfortably warm while working.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "It helps perform tasks quickly, if one can withstand the heat.", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        FUMAROLE_FARM_HOE =
+		{
+			GENERIC = "It may require repairs soon.", -- This is the coldest state, the heat tool is about to break and shatter into the broken state if used a bit more, there are visible cracks.
+			LUKEWARM = "Its temperature has diminished significantly.", -- The next state, its lukewarm, no cracks.
+			WARM = "It keeps its user comfortably warm while working.", -- It's starting to get red hot, it's a bit more efficient in the action it does, and keeps the player cozy.
+			HOT = "It helps perform tasks quickly, if one can withstand the heat.", -- SUPER HOT, it's very efficient in the action it does, e.g. the axe fells trees in half the hits needed, keeps the player cozy, maybe too cozy! (e.g. overheat in summer)
+		},
+
+        -- This trap is a cluster of rocks gets heated and deals fire damage to creatures (including players!) on top
+        TRAP_FUMAROLE =
+        {
+            HELD = "It never hurts to be prepared, dear.", -- When held in the inventory.
+            GENERIC = "The stones have cooled. It's perfectly safe.", -- Coldest state, the trap is ineffective.
+            WARM = "It's still rather hot.", -- Warm, a bit red hot, it does some damage.
+            HOT = "Stepping on that would be quite detrimental to one's health.", -- Super hot, it's doing full fire damage.
+        },
+
+        HEALINGSALVE_FUMAROLE = "It should provide adequate insulation against high temperatures.",
+
+		VAULT_PILLAR_GUARD = "Goodness, it appears I've activated an ancient security mechanism.",
+		VAULT_PILLAR_GUARD_CRAFTED = "It will guard the surrounding area.",
+		VAULT_PILLAR_GUARD_DORMANT = "At first glance, it appears little more than an ornate pillar.",
+		VAULT_PILLAR_GUARD_DORMANT_CRAFTED = "It clearly requires an energy source.",
+		VAULT_PILLAR_GUARD_CONSTR = "Some materials are still outstanding.",
+		VAULT_PILLAR_GUARD_CONSTR_PLANS = "One must be strategic in its placement.",
+		VAULT_CRAWLER =
+		{
+			GENERIC = "Ah! I believe the solution to my quandary has presented itself.",
+			SOCKETED = "A perfect fit, naturally.",
+		},
+
+        VAULT_DECON_DOOR = "These walls must have been constructed with utmost care to remain in such pristine condition.",
+        VAULT_DECON_MISTER = "It seems designed to expel contaminants from the area.",
+		VAULT_KEY_ACTIVATOR = "This small alcove is lined with a metallic substance, as if to conduct an electrical current...",
+		VAULT_CRAWLER_LEVER = "There's no way to predict what will happen, but the result will be informative, at least.",
+        VAULT_KEY = "I'm wary of just what it might unlock...",
+        VAULT_KEY_PEDESTAL =
+        {
+            GENERIC = "The measures employed to contain it suggest the key is of no small importance.", -- Keystone is on it, ready to take
+            PICKED = "The key has been taken.", -- No more keystone on it, we already took it, or someone else did.
+        },
+        VAULT_ORB_REFINED = "The ancients tapped the orbs power for teleportation.",
+        VAULT_PILLAR_GUARD_PIECE = "This is obviously a component of the ancient security tower.",
+        VAULT_REFINER_PEDESTAL = "A mill of sorts employed by the ancients.",
+
+        VAULT_COMPASS =
+        {
+            GENERIC = "It is guiding us toward something of great importance.", -- Pointing us to the teleporters leading to the key room
+            NOTVAULT = "It is beyond its effective range.", -- We're not in the vault, so its in an ineffective state.
+            KEYROOM = "It appears this is the intended destination.", -- We're already in the key room! Compass marker is in a success state.
+        },
+
+        CEILING_ROPE = "A tried and true means of escape.",
+        VAULT_KEY_EXIT = "Since there is no place to tie a rope, one may not climb back up.",--There's no where to tie a rope. Exit, but no re-entry.
+
+        -- Crow Carnival 2026
+
+        CARNIVALGAME_GOLFGAME_KIT_EASY = "An introductory course, no doubt.",
+        CARNIVALGAME_GOLFGAME_KIT_MEDIUM = "A course of middling difficulty.",
+        CARNIVALGAME_GOLFGAME_KIT_HARD = "For those up for a challenge.",
+        CARNIVALGAME_GOLFGAME_KIT_DIY = "One may use this to create a custom, and hopefully delightful, mini-golf course.",
+
+        CARNIVALGAME_GOLF_TEE =
+        {
+            GENERIC = "A token must be deposited before the machine will dispense a ball.",  -- Ready to take a game token, reference other carnival game strings
+            PLAYING = "A token has been inserted. The match is already in play.", -- The game is active and in play
+            INACTIVE = "The mini-golf course requires at least a flaghole to be playable.", -- The game token slot is covered, due to the course not being fully complete (e.g. hole marker isn't placed)
+        },
+        CARNIVALGAME_GOLF_HOLE = "The objective of the game is to deposit the ball into that hole with as few strokes as possible.",
+
+        CARNIVALGAME_GOLF_TEE_KIT = "Where the ball dropper is placed determines where we begin play.",
+        CARNIVALGAME_GOLF_HOLE_KIT = "The flaghole should be positioned sufficiently far from the start to provide an appropriate challenge.",
+
+        CARNIVALGAME_GOLFCLUB = "Essentially an instrument optimized for low-velocity kinetic transfer.",
+        CARNIVALGAME_GOLFBALL = "A near-perfect sphere, optimized for predictable rolling dynamics.",
+
+        CARNIVALGAME_GOLFPROP_FENCE = "It designates the play area.",
+
+        CARNIVALGAME_GOLFPROP_SPINNER = "Its behavior is simple to describe, but intentionally difficult to accommodate.", -- All 4 spin plates(size/rotation) use the same inspect
+        CARNIVALGAME_GOLFPROP_CUTOUT = "It is both aesthetic marker and deliberate impediment to linear play.", -- All 10 prop wood cutouts use the same inspect
+        CARNIVALGAME_GOLFPROP_MOVINGWALL = "A wall that rises and falls at set intervals.", -- All colored moving walls use this space inspect
+
+        CARNIVALGAME_GOLFPROP_WORMHOLE = "It connects to another on the course, enabling instantaneous transfer between them.", -- a fake wormhole, that lets the ball travel to another random wormhole
+
+        CARNIVALGAME_GOLFPROP_SPRING = "A controlled propulsion platform using stored mechanical energy.", -- spring that pops up to launch the ball
+
+        CARNIVALGAME_GOLFPROP_FAN = "The ball path must be adjusted to account for the wind.", -- fan that blows wind and pushes in a direction
+
     },
 
     DESCRIBE_GENERIC = "A rare occurrence. I don't know what that is.",
